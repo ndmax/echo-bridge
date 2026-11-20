@@ -16,7 +16,7 @@
 import groovy.transform.Field
 
 metadata {
-    definition(name: "Echo Bridge Speaker", namespace: "echobridge", author: "Echo Bridge") {
+    definition(name: "Echo Bridge Speaker", namespace: "echobridge", author: "Nathan Maxwell") {
         capability "Actuator"
         capability "SpeechSynthesis"
 

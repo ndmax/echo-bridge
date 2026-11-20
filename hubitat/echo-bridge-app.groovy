@@ -22,7 +22,7 @@ import groovy.transform.Field
 definition(
     name: "Echo Bridge",
     namespace: "echobridge",
-    author: "Echo Bridge",
+    author: "Nathan Maxwell",
     description: "Speak text and play public HTTPS MP3s on Alexa devices through the Echo Bridge service.",
     category: "Convenience",
     iconUrl: "",
