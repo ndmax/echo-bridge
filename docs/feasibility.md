@@ -7,7 +7,7 @@ Sources and line references are in [research.md](research.md). Status vocabulary
 - **UNVERIFIED**: untested.
 - **BLOCKED**: no viable mechanism.
 
-Real-device tests are run by the user. Individual TTS and the 2-device zone are VERIFIED-HW as of 2026-11-20; MP3 is pending.
+Real-device tests are run by the user. All three features are VERIFIED-HW as of 2026-11-20 (one Echo for TTS and MP3, two Echos for the zone).
 
 ## Feature / transport matrix
 
@@ -15,7 +15,7 @@ Real-device tests are run by the user. Individual TTS and the 2-device zone are 
 |---|---|---|---|---|---|
 | Individual TTS | One `POST /api/behaviors/preview` with an `Alexa.Speak` node (skill `amzn1.ask.1p.saysomething`), one target | alexa-remote2 `speak` builder (`alexa-remote.js:2843-2885`); Echo Speaks `speak()` uses the same family | M3: one outbound POST with the expected node (`test/alexa.test.js`) | 2026-11-20: Office Echo spoke the text in under 1 s, normal English voice, no chime; bridge returned `{"accepted":true,"mode":"speak","targets":1}` | **VERIFIED-HW** |
 | Multi-device TTS (one call) | One `POST /api/behaviors/preview` with **one** `AlexaAnnouncement` node whose `target.devices` lists every Echo | alexa-remote2 array branch (`alexa-remote.js:2925-2980`, README "multiple devices using one command"); Echo Speaks zones use the same (`echo-speaks-zones.groovy:1384-1390`) | M3: exactly one outbound POST containing all serials; no per-device fallback on error/429 (`test/alexa.test.js`, mutation-checked) | 2026-11-20: one `/speak` with 2 Echos → `{"accepted":true,"mode":"announcement","targets":2}`; played immediately on both | **VERIFIED-HW** (one request in tests; delivery to both on hardware) |
-| Public HTTPS MP3 URL on Echo | One `POST /api/behaviors/preview` with an `Alexa.Speak` node whose `textToSpeak` is `<speak><audio src="URL"/></speak>`, one target | Same payload as Home Assistant AMP "tts" (alexapy `alexaapi.py:1076-1137`); real-Echo success reported in supernotify PR #224 (2026-09-25) and AMP #1412; the announcement variant reported **not** to play audio | M5: URL validation; one outbound POST with SSML `<audio>`; media host never contacted (`test/play.test.js`, `test/validate.test.js`) | Pending (user, with a public MP3) | PLAUSIBLE: **UNVERIFIED until heard** |
+| Public HTTPS MP3 URL on Echo | One `POST /api/behaviors/preview` with an `Alexa.Speak` node whose `textToSpeak` is `<speak><audio src="URL"/></speak>`, one target | Same payload as Home Assistant AMP "tts" (alexapy `alexaapi.py:1076-1137`); real-Echo success reported in supernotify PR #224 (2026-09-25) and AMP #1412; the announcement variant reported **not** to play audio | M5: URL validation; one outbound POST with SSML `<audio>`; media host never contacted (`test/play.test.js`, `test/validate.test.js`) | 2026-11-20: `/play` to one Echo with the user's ffmpeg-converted (48 kbps, 24 kHz) MP3 on their own public HTTPS domain (not behind NGINX Proxy Manager) → played audibly | **VERIFIED-HW** (one device, one file; undocumented Amazon behavior) |
 
 ## Answers to the brief's questions
 
@@ -66,5 +66,5 @@ Real-device tests are run by the user. Individual TTS and the 2-device zone are 
 - We depend on alexa-remote2 as an npm package (MIT notice ships with it). We write our own Groovy and JS, copying no upstream code, so no extra attribution is required. We credit the projects in the README anyway.
 
 ## Decision needed / flagged
-- **MP3:** proceed with `/play` and `playMp3`, clearly labeled **UNVERIFIED**, because the mechanism exists in source (the same `Alexa.Speak` payload) and has independent hardware reports. If the live test fails, remove or disable the endpoint and document Voice Monkey or a routine as the fallback.
+- **MP3 (resolved 2026-11-20):** the live test played audibly, so `playMp3` goes into the Hubitat driver. It still relies on undocumented Amazon behavior that could change without notice. Original plan: proceed with `/play` and `playMp3`, clearly labeled **UNVERIFIED**, because the mechanism exists in source (the same `Alexa.Speak` payload) and has independent hardware reports. If the live test fails, remove or disable the endpoint and document Voice Monkey or a routine as the fallback.
 - **Login access:** use an SSH tunnel to a loopback-only proxy (recommended), or LAN-bound plain HTTP for the few minutes of login.
