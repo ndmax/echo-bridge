@@ -11,6 +11,9 @@ import { BridgeError } from './errors.js';
 
 const NODE_TYPE = 'com.amazon.alexa.behaviors.model.OpaquePayloadOperationNode';
 const THROTTLE_MARKERS = ['ThrottlingException', 'Rate exceeded', 'Too many requests'];
+// Families that report VOLUME_SETTING but are not speakers we can target:
+// WHA = multi-room music groups, VOX = Alexa app installs on phones/tablets (seen on a real account).
+const NON_SPEAKER_FAMILIES = new Set(['WHA', 'VOX']);
 
 // Alexa.Speak: plain speech on one device, no chime (amzn1.ask.1p.saysomething).
 export function buildSpeakNode(device, textToSpeak, locale) {
@@ -138,7 +141,7 @@ export class AlexaClient {
   async listDevices() {
     this.requireReady();
     return Object.values(this.remote.serialNumbers)
-      // Speech needs a speaker; groups and app/phone entries have no VOLUME_SETTING.
+      .filter((d) => !NON_SPEAKER_FAMILIES.has(d.deviceFamily))
       .filter((d) => Array.isArray(d.capabilities) && d.capabilities.includes('VOLUME_SETTING'))
       .map((d) => ({ id: d.serialNumber, name: d.accountName, family: d.deviceFamily, online: Boolean(d.online) }));
   }

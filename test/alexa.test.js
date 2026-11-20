@@ -15,7 +15,10 @@ const DEVICES = {
   KITCHEN1: { serialNumber: 'KITCHEN1', deviceType: 'A3S5BH2HU6VAYF', deviceOwnerCustomerId: 'CUST1', accountName: 'Kitchen', deviceFamily: 'ECHO', online: true, capabilities: ['VOLUME_SETTING', 'MICROPHONE'] },
   LIVING2: { serialNumber: 'LIVING2', deviceType: 'A4ZP7ZC4PI6TO', deviceOwnerCustomerId: 'CUST1', accountName: 'Living Room', deviceFamily: 'KNIGHT', online: true, capabilities: ['VOLUME_SETTING'] },
   OFFICE3: { serialNumber: 'OFFICE3', deviceType: 'A32DOYMUN6DTXA', deviceOwnerCustomerId: 'CUST1', accountName: 'Office', deviceFamily: 'ECHO', online: false, capabilities: ['VOLUME_SETTING'] },
-  GROUP9: { serialNumber: 'GROUP9', deviceType: 'A3C9PE6TNYLTCH', deviceOwnerCustomerId: 'CUST1', accountName: 'Everywhere', deviceFamily: 'WHA', online: true, capabilities: [] },
+  // Real accounts report VOLUME_SETTING for music groups and Alexa app installs too.
+  GROUP9: { serialNumber: 'GROUP9', deviceType: 'A3C9PE6TNYLTCH', deviceOwnerCustomerId: 'CUST1', accountName: 'Everywhere', deviceFamily: 'WHA', online: true, capabilities: ['VOLUME_SETTING'] },
+  PHONE8: { serialNumber: 'PHONE8', deviceType: 'A2TF17PFR55MTB', deviceOwnerCustomerId: 'CUST1', accountName: 'This Device', deviceFamily: 'VOX', online: true, capabilities: ['VOLUME_SETTING'] },
+  NOVOL7: { serialNumber: 'NOVOL7', deviceType: 'A1RABVCI4QCIKC', deviceOwnerCustomerId: 'CUST1', accountName: 'Remote', deviceFamily: 'OTHER', online: true, capabilities: [] },
 };
 
 let requests;
