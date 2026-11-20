@@ -16,7 +16,8 @@
 import groovy.transform.Field
 
 metadata {
-    definition(name: "Echo Bridge Speaker", namespace: "echobridge", author: "Nathan Maxwell") {
+    definition(name: "Echo Bridge Speaker", namespace: "echobridge", author: "Nathan Maxwell",
+               importUrl: "https://raw.githubusercontent.com/ndmax/echo-bridge/main/hubitat/echo-bridge-device.groovy") {
         capability "Actuator"
         capability "SpeechSynthesis"
 

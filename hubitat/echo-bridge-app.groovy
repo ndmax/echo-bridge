@@ -27,7 +27,8 @@ definition(
     category: "Convenience",
     iconUrl: "",
     iconX2Url: "",
-    singleInstance: true
+    singleInstance: true,
+    importUrl: "https://raw.githubusercontent.com/ndmax/echo-bridge/main/hubitat/echo-bridge-app.groovy"
 )
 
 preferences {
