@@ -44,5 +44,4 @@ Static and dependency review:
 ## Next actions
 
 - Fix anything the hub test turns up, and mark the Hubitat layer VERIFIED-HW.
-- Decide the project license before sharing publicly. The code currently says MIT; see PROGRESS.md.
 - Watch alexa-cookie2 for removal of `http-proxy-response-rewrite` (Node 27 support) and for fixes to the `cookie` advisory.

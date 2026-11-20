@@ -11,7 +11,7 @@
  *  Rule Machine: use "Custom Action" on this device, command speak or playMp3, with one string
  *  parameter (e.g. https://media.example.com/sounds/doorbell.mp3).
  *
- *  License: MIT
+ *  Copyright (c) 2026 Nathan Maxwell. MIT License (see LICENSE).
  */
 import groovy.transform.Field
 

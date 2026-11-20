@@ -9,7 +9,7 @@
  *  Supported: speak(text) on a single Echo or a zone (one Amazon announcement for the whole
  *  zone), and playMp3(httpsUrl) on a single Echo. Nothing else.
  *
- *  License: MIT
+ *  Copyright (c) 2026 Nathan Maxwell. MIT License (see LICENSE).
  */
 import groovy.json.JsonOutput
 import groovy.transform.Field

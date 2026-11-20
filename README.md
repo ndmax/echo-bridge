@@ -266,6 +266,9 @@ The tests prove what the bridge sends, for example exactly one outbound Amazon r
 
 ## Credits and licenses
 
+Echo Bridge is released under the [MIT License](LICENSE). Copyright (c) 2026 Nathan Maxwell.
+
+
 - [`alexa-remote2`](https://github.com/Apollon77/alexa-remote) and `alexa-cookie2` by Apollon77 and contributors (MIT) do the Amazon work.
 - The design was informed by [Echo Speaks](https://github.com/tonesto7/echo-speaks) (Apache-2.0) and [echo-speaks-server](https://github.com/tonesto7/echo-speaks-server) (MIT). No code was copied from them.
 - The MP3 approach was informed by reports from Home Assistant's Alexa Media Player community.

@@ -27,10 +27,11 @@ Plan: milestones M0–M7 (setup → research → bridge skeleton → TTS/zones �
 - Workspace stays at `scratch/echo-bridge` (README-SETUP path is outdated).
 - Target Node 24 LTS (`.nvmrc`); use `nvm use` before running. `npm run login` does not work on Node 27.
 - Keep both PROGRESS.md (handoff) and docs/status.md (detailed status).
+- License: MIT, copyright Nathan Maxwell (`LICENSE`), confirmed by user 2026-11-20.
 - README-SETUP's "Run Codex" step skipped (not applicable).
 - MP3: build `/play` + `playMp3` labeled UNVERIFIED (user approved 2026-11-20).
 - Login proxy: LAN-bound plain HTTP during login is acceptable (user's home network).
 - Single-device TTS uses `Alexa.Speak` (no chime); zones use one announcement (chime).
 
 ## Open decisions
-- Project license: package.json and the Groovy headers say MIT (assumed, not chosen by the user). Confirm before publishing.
+- None.
