@@ -300,6 +300,8 @@ docker rmi tonistiigi/binfmt:latest
 ```
 Bump `version` in `package.json` before each release so every published tag is unique. `.dockerignore` keeps `.env`, `data/` and `references/` out of the image; never build from a folder where secrets could slip past it.
 
+The Docker Hub short description and overview are kept in [`docs/dockerhub.md`](docs/dockerhub.md). After changing it, paste it into the repository's overview on Docker Hub.
+
 To test a local build without pushing, run `docker build -t echo-bridge:local .` and set `ECHO_BRIDGE_IMAGE=echo-bridge:local` in `.env`.
 
 ## Credits and licenses
