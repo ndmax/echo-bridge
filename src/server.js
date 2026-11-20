@@ -3,6 +3,7 @@
 import http from 'node:http';
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
+import { AlexaClient } from './alexa.js';
 import { loadConfig } from './config.js';
 import { BridgeError, badRequest } from './errors.js';
 import { RateLimiter } from './rate-limit.js';
@@ -113,14 +114,12 @@ export function createBridgeServer({ config, alexa, limiter, log = console.log }
 
 async function main() {
   const config = loadConfig();
-  // Placeholder until the Amazon transport is wired in (milestone M3).
-  const alexa = {
-    status: () => 'login-required',
-    listDevices: async () => { throw new BridgeError(503, 'amazon_not_ready', 'Amazon login required'); },
-    speak: async () => { throw new BridgeError(503, 'amazon_not_ready', 'Amazon login required'); },
-  };
+  const alexa = new AlexaClient({ config });
   const server = createBridgeServer({ config, alexa });
   server.listen(config.port, config.host, () => console.log(`echo-bridge listening on ${config.host}:${config.port}`));
+  // Serve /health immediately; speech routes return 503 until the saved session is loaded.
+  const connected = await alexa.connect();
+  console.log(connected ? 'Amazon session ready' : 'Amazon login required: run "npm run login"');
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
