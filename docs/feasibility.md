@@ -7,14 +7,14 @@ Sources and line references are in [research.md](research.md). Status vocabulary
 - **UNVERIFIED**: untested.
 - **BLOCKED**: no viable mechanism.
 
-Real-device tests are run by the user. Individual TTS is VERIFIED-HW as of 2026-11-20; the others are pending.
+Real-device tests are run by the user. Individual TTS and the 2-device zone are VERIFIED-HW as of 2026-11-20; MP3 is pending.
 
 ## Feature / transport matrix
 
 | Feature | Candidate mechanism | Evidence | Mock test | Real device test | Status |
 |---|---|---|---|---|---|
-| Individual TTS | One `POST /api/behaviors/preview` with an `Alexa.Speak` node (skill `amzn1.ask.1p.saysomething`), one target | alexa-remote2 `speak` builder (`alexa-remote.js:2843-2885`); Echo Speaks `speak()` uses the same family | M3: one outbound POST with the expected node (`test/alexa.test.js`) | 2026-11-20: Office Echo spoke the text; bridge returned `{"accepted":true,"mode":"speak","targets":1}` | **VERIFIED-HW** |
-| Multi-device TTS (one call) | One `POST /api/behaviors/preview` with **one** `AlexaAnnouncement` node whose `target.devices` lists every Echo | alexa-remote2 array branch (`alexa-remote.js:2925-2980`, README "multiple devices using one command"); Echo Speaks zones use the same (`echo-speaks-zones.groovy:1384-1390`) | Planned M3: exactly one outbound POST containing all serials; no per-device fallback on error/429 | Pending (user) | VERIFIED-SOURCE (single request); hardware UNVERIFIED |
+| Individual TTS | One `POST /api/behaviors/preview` with an `Alexa.Speak` node (skill `amzn1.ask.1p.saysomething`), one target | alexa-remote2 `speak` builder (`alexa-remote.js:2843-2885`); Echo Speaks `speak()` uses the same family | M3: one outbound POST with the expected node (`test/alexa.test.js`) | 2026-11-20: Office Echo spoke the text in under 1 s, normal English voice, no chime; bridge returned `{"accepted":true,"mode":"speak","targets":1}` | **VERIFIED-HW** |
+| Multi-device TTS (one call) | One `POST /api/behaviors/preview` with **one** `AlexaAnnouncement` node whose `target.devices` lists every Echo | alexa-remote2 array branch (`alexa-remote.js:2925-2980`, README "multiple devices using one command"); Echo Speaks zones use the same (`echo-speaks-zones.groovy:1384-1390`) | M3: exactly one outbound POST containing all serials; no per-device fallback on error/429 (`test/alexa.test.js`, mutation-checked) | 2026-11-20: one `/speak` with 2 Echos → `{"accepted":true,"mode":"announcement","targets":2}`; played immediately on both | **VERIFIED-HW** (one request in tests; delivery to both on hardware) |
 | Public HTTPS MP3 URL on Echo | One `POST /api/behaviors/preview` with an `Alexa.Speak` node whose `textToSpeak` is `<speak><audio src="URL"/></speak>`, one target | Same payload as Home Assistant AMP "tts" (alexapy `alexaapi.py:1076-1137`); real-Echo success reported in supernotify PR #224 (2026-09-25) and AMP #1412; the announcement variant reported **not** to play audio | Planned M5: URL validation; one outbound POST with an SSML payload; no fetch of the URL | Pending (user, with a public MP3) | PLAUSIBLE: **UNVERIFIED until heard** |
 
 ## Answers to the brief's questions
