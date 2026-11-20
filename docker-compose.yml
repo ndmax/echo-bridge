@@ -1,11 +1,12 @@
 # Echo Bridge — Docker Compose / Portainer stack.
 #
+# Pulls the published image from Docker Hub; no source checkout or local build is needed.
 # Values come from environment variables: a .env file next to this file (docker compose), or
 # the "Environment variables" section of a Portainer stack. See .env.example for all settings.
 services:
   echo-bridge:
-    build: .
-    image: echo-bridge:local
+    # Pin a version tag (e.g. endiemachswell/echo-bridge:0.1.0) for predictable upgrades.
+    image: ${ECHO_BRIDGE_IMAGE:-endiemachswell/echo-bridge:latest}
     container_name: echo-bridge
     restart: unless-stopped
     # Must own the data directory on the host (e.g. 1000:1000; on Unraid usually 99:100).

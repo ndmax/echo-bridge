@@ -19,7 +19,10 @@ Plan: milestones M0–M7 (setup → research → bridge skeleton → TTS/zones �
 
 - **M7 Packaging and docs**: `Dockerfile` (node:24-alpine, non-root, healthcheck, `/app/data` volume), `docker-compose.yml` (Portainer-friendly env interpolation, PUID/PGID, DATA_DIR), `.dockerignore`, `README.md` (network-agnostic HTTPS requirement, NGINX Proxy Manager as the example), `docs/status.md`. Server now handles SIGTERM, reports EADDRINUSE, and sets umask 077. Image built and test container checked locally; 36 tests pass on Node 24; npm audit: 3 low (known).
 
+- **Docker Hub distribution**: `docker-compose.yml` pulls `${ECHO_BRIDGE_IMAGE:-endiemachswell/echo-bridge:latest}` (no `build:`); `.env.example` gains `ECHO_BRIDGE_IMAGE`; Dockerfile has OCI labels; README covers pull-based install/upgrade, Portainer web-editor stack, and a maintainer `buildx` multi-arch (amd64+arm64) push section. Image not yet pushed.
+
 ## Next
+- User: publish the image to Docker Hub (README "Publishing the image").
 - User: deploy the container on Unraid/Portainer, set up HTTPS, install the Hubitat app and driver, run the hub tests (docs/status.md "Outstanding steps").
 
 ## Decisions made
@@ -31,6 +34,7 @@ Plan: milestones M0–M7 (setup → research → bridge skeleton → TTS/zones �
 - README-SETUP's "Run Codex" step skipped (not applicable).
 - MP3: build `/play` + `playMp3` labeled UNVERIFIED (user approved 2026-11-20).
 - Login proxy: LAN-bound plain HTTP during login is acceptable (user's home network).
+- Distribution: Docker image on Docker Hub as `endiemachswell/echo-bridge`, tags `<package version>` + `latest`, multi-arch amd64+arm64 (user, 2026-11-20).
 - Single-device TTS uses `Alexa.Speak` (no chime); zones use one announcement (chime).
 
 ## Open decisions

@@ -1,6 +1,10 @@
 # Echo Bridge: small Node.js service; runs as an unprivileged user.
 FROM node:24-alpine
 
+LABEL org.opencontainers.image.title="echo-bridge" \
+      org.opencontainers.image.description="Minimal Hubitat-to-Alexa bridge: TTS, one-request zone announcements, MP3 URL playback" \
+      org.opencontainers.image.licenses="MIT"
+
 WORKDIR /app
 ENV NODE_ENV=production \
     HOST=0.0.0.0 \

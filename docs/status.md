@@ -11,7 +11,7 @@ Last updated: 2026-11-20.
 | MP3 from a public HTTPS URL | `POST /play` → one `Alexa.Speak` with `<speak><audio src="URL"/></speak>` | `test/play.test.js`, `test/validate.test.js`: URL rules, XML escaping, 250-char limit, media host never contacted | User's 48 kbps / 24 kHz MP3 played immediately and completely | **VERIFIED-HW** (undocumented Amazon behavior) |
 | Amazon login | `npm run login` / `docker exec … node src/login.js` (alexa-cookie2 proxy) | `test/login.test.js`: options, file permissions, failure path, real proxy start/stop with no Amazon traffic | Completed with 2FA on Node 24.22.3; crashed on Node 27 alpha (dependency bug, now guarded) | **VERIFIED-HW** |
 | Hubitat app + driver | `hubitat/*.groovy` | groovyc 2.5 compile; throwaway stubbed-API harness (23 checks: one request per zone, local rejections, child sync, error reporting, no token or URL logging) | Not installed yet | **UNVERIFIED on a hub** |
-| Docker packaging | `Dockerfile`, `docker-compose.yml` | Image built; test container: `/health` OK, Docker healthcheck `healthy`, runs as uid 1000, login starts in the container, files owner-only, stops in under 1 s | Not deployed to the homelab yet | Built and tested locally |
+| Docker packaging | `Dockerfile`, `docker-compose.yml` | Image built; test container: `/health` OK, Docker healthcheck `healthy`, runs as uid 1000, login starts in the container, files owner-only, stops in under 1 s | Not deployed to the homelab yet; not yet pushed to Docker Hub (`endiemachswell/echo-bridge`) | Built and tested locally |
 
 ## Test results (Node 24.22.3)
 
@@ -36,10 +36,11 @@ Static and dependency review:
 
 ## Outstanding steps (user)
 
-1. Deploy the container on Unraid/Portainer (README §1) and copy the existing session from `./data` into the container's data folder, or log in again.
-2. Set up the HTTPS endpoint for the bridge (README §3, NGINX Proxy Manager example).
-3. Install the Hubitat driver and app (README §4). Then test single-Echo `speak`, zone `speak`, `playMp3`, the `lastResult` attribute, and one Rule Machine action of each kind.
-4. Optional: a 3+ device zone test, and a check of how simultaneous zone playback sounds across rooms.
+1. Publish the image to Docker Hub (README "Publishing the image": `docker login`, then the `buildx` multi-arch push).
+2. Deploy the container on Unraid/Portainer (README §1) and copy the existing session from `./data` into the container's data folder, or log in again.
+3. Set up the HTTPS endpoint for the bridge (README §3, NGINX Proxy Manager example).
+4. Install the Hubitat driver and app (README §4). Then test single-Echo `speak`, zone `speak`, `playMp3`, the `lastResult` attribute, and one Rule Machine action of each kind.
+5. Optional: a 3+ device zone test, and a check of how simultaneous zone playback sounds across rooms.
 
 ## Next actions
 

@@ -70,7 +70,9 @@ Details and sources are in [`docs/feasibility.md`](docs/feasibility.md) and [`do
 
 ### Option A: Docker Compose / Portainer
 
-1. Get the project files onto the Docker host, for example with `git clone`.
+The image is published on Docker Hub as [`endiemachswell/echo-bridge`](https://hub.docker.com/r/endiemachswell/echo-bridge) (`linux/amd64` and `linux/arm64`). You don't need the source code or a build step.
+
+1. Put `docker-compose.yml` and `.env.example` from this project in a folder on the Docker host.
 2. Create the settings file:
    ```bash
    cp .env.example .env
@@ -82,22 +84,20 @@ Details and sources are in [`docs/feasibility.md`](docs/feasibility.md) and [`do
    - `DATA_DIR`: a host folder for the Amazon session, e.g. `/mnt/user/appdata/echo-bridge` on Unraid.
    - `PUID` / `PGID`: the user and group that own `DATA_DIR`. Unraid's defaults are `99` / `100`.
    - Optional: `MEDIA_HOST_ALLOWLIST` (needed for MP3 playback) and `ALLOWED_DEVICE_IDS`.
+   - Optional: `ECHO_BRIDGE_IMAGE` to pin a version, e.g. `endiemachswell/echo-bridge:0.1.0`. The default is `:latest`.
 3. Create the data folder, owned by that user:
    ```bash
    mkdir -p /mnt/user/appdata/echo-bridge
    chown 99:100 /mnt/user/appdata/echo-bridge && chmod 700 /mnt/user/appdata/echo-bridge
    ```
-4. Build and start:
+4. Pull and start:
    ```bash
-   docker compose up -d --build
+   docker compose pull
+   docker compose up -d
    docker logs echo-bridge     # expect: "Amazon login required ..." until step 2
    ```
 
-**Portainer:** you can either
-- build the image once on the host (`docker build -t echo-bridge:local .`) and create a stack from `docker-compose.yml` with the `build:` line removed, or
-- deploy the stack from a Git repository containing this project, so Portainer builds it.
-
-In both cases, enter the `.env` values under the stack's **Environment variables**.
+**Portainer:** **Stacks → Add stack → Web editor**, paste `docker-compose.yml`, and enter the `.env` values under **Environment variables**. Portainer pulls the image from Docker Hub.
 
 ### Option B: Node.js (no Docker)
 
@@ -235,7 +235,7 @@ curl -s -X POST $BRIDGE/speak -H "Authorization: Bearer $TOKEN" -H 'Content-Type
 
 ## Upgrading
 
-- **Docker:** `git pull && docker compose up -d --build`.
+- **Docker:** `docker compose pull && docker compose up -d`. In Portainer, use the stack's **Update** with *Re-pull image* on. If you pinned `ECHO_BRIDGE_IMAGE` to a version, change the tag first.
 - **Node.js:** `git pull && npm ci --omit=dev`, then restart.
 
 Your session in the data folder is kept either way. After upgrading the Hubitat code, re-paste the driver and app and click **Done** in the app.
@@ -263,6 +263,21 @@ nvm use && npm ci
 npm test        # node:test; Amazon is mocked at the https.request level
 ```
 The tests prove what the bridge sends, for example exactly one outbound Amazon request for a zone. They can't prove what Amazon or an Echo does. Research notes, design and status are in [`docs/`](docs/).
+
+### Publishing the image (maintainer)
+
+Build for both common architectures and push to Docker Hub, tagged with the `package.json` version and `latest`:
+```bash
+npm test                                   # on Node 24
+VERSION=$(node -p "require('./package.json').version")
+docker login                               # once, as endiemachswell
+docker buildx create --use --name echo-bridge-builder 2>/dev/null || docker buildx use echo-bridge-builder
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -t endiemachswell/echo-bridge:$VERSION -t endiemachswell/echo-bridge:latest --push .
+```
+Bump `version` in `package.json` before each release so every published tag is unique. `.dockerignore` keeps `.env`, `data/` and `references/` out of the image; never build from a folder where secrets could slip past it.
+
+To test a local build without pushing, run `docker build -t echo-bridge:local .` and set `ECHO_BRIDGE_IMAGE=echo-bridge:local` in `.env`.
 
 ## Credits and licenses
 
