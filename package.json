@@ -4,6 +4,7 @@
   "private": true,
   "description": "Minimal Hubitat-to-Alexa bridge: single-device TTS, one-call zone announcements, public HTTPS MP3 playback (unverified).",
   "type": "module",
+  "author": "Nathan Maxwell",
   "license": "MIT",
   "engines": {
     "node": ">=24"
