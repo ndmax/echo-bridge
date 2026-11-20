@@ -72,7 +72,12 @@ Details and sources are in [`docs/feasibility.md`](docs/feasibility.md) and [`do
 
 The image is published on Docker Hub as [`endiemachswell/echo-bridge`](https://hub.docker.com/r/endiemachswell/echo-bridge) (`linux/amd64` and `linux/arm64`). You don't need the source code or a build step.
 
-1. Put `docker-compose.yml` and `.env.example` from this project in a folder on the Docker host.
+1. Download `docker-compose.yml` and `.env.example` into a folder on the Docker host:
+   ```bash
+   mkdir -p echo-bridge && cd echo-bridge
+   curl -fsSLO https://raw.githubusercontent.com/ndmax/echo-bridge/main/docker-compose.yml
+   curl -fsSLO https://raw.githubusercontent.com/ndmax/echo-bridge/main/.env.example
+   ```
 2. Create the settings file:
    ```bash
    cp .env.example .env
@@ -141,8 +146,16 @@ The login proxy is plain HTTP on your LAN and runs only while the login command 
 
 ## 4. Install the Hubitat app and driver
 
-1. **Drivers Code → New Driver:** paste [`hubitat/echo-bridge-device.groovy`](hubitat/echo-bridge-device.groovy) → **Save**.
-2. **Apps Code → New App:** paste [`hubitat/echo-bridge-app.groovy`](hubitat/echo-bridge-app.groovy) → **Save**.
+1. **Drivers Code → New Driver → Import**, enter this URL → **Import** → **Save**:
+   ```
+   https://raw.githubusercontent.com/ndmax/echo-bridge/main/hubitat/echo-bridge-device.groovy
+   ```
+2. **Apps Code → New App → Import**, enter this URL → **Import** → **Save**:
+   ```
+   https://raw.githubusercontent.com/ndmax/echo-bridge/main/hubitat/echo-bridge-app.groovy
+   ```
+
+   *Import* is in the code editor's menu. You can also paste the code from [`hubitat/echo-bridge-device.groovy`](hubitat/echo-bridge-device.groovy) and [`hubitat/echo-bridge-app.groovy`](hubitat/echo-bridge-app.groovy).
 3. **Apps → Add User App → Echo Bridge.**
 4. Enter the **Bridge URL** (e.g. `https://echo-bridge.home.example.com`) and the **Bridge token** (`BRIDGE_TOKEN` from `.env`).
 5. **Choose Echo devices:** the list comes from the bridge. Pick the Echos that should get their own virtual device.
@@ -238,7 +251,7 @@ curl -s -X POST $BRIDGE/speak -H "Authorization: Bearer $TOKEN" -H 'Content-Type
 - **Docker:** `docker compose pull && docker compose up -d`. In Portainer, use the stack's **Update** with *Re-pull image* on. If you pinned `ECHO_BRIDGE_IMAGE` to a version, change the tag first.
 - **Node.js:** `git pull && npm ci --omit=dev`, then restart.
 
-Your session in the data folder is kept either way. After upgrading the Hubitat code, re-paste the driver and app and click **Done** in the app.
+Your session in the data folder is kept either way. To upgrade the Hubitat code, open the driver and the app under *Drivers Code* / *Apps Code*, use **Import** again with the same URLs, **Save**, then click **Done** in the Echo Bridge app.
 
 ## Security notes
 
