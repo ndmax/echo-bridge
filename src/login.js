@@ -74,7 +74,17 @@ export async function runLogin({ config, remote = new AlexaRemote(), print = con
   });
 }
 
+// alexa-cookie2's proxy depends on http-proxy-response-rewrite@0.0.1, which calls zlib.Gunzip()
+// without `new`. Node 24-26 only warn (DEP0184); Node 27 throws mid-login and kills the proxy.
+export function assertSupportedNode(version = process.versions.node) {
+  const major = Number(version.split('.')[0]);
+  if (major >= 27) {
+    throw new Error(`npm run login does not work on Node ${version} (alexa-cookie2 proxy incompatibility). Use Node 24 LTS: nvm use`);
+  }
+}
+
 async function main() {
+  assertSupportedNode();
   const config = loadConfig();
   const deviceCount = await runLogin({ config });
   console.log(`Login complete. Session saved to ${config.cookieFile}; ${deviceCount} Alexa devices found.`);

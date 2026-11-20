@@ -56,6 +56,7 @@ Confidence legend: **H** = read directly in source/official docs; **M** = third-
   - When it reads that data back, it uses the *default* path, not `formerDataStorePath` (line 121). So with a custom path, each fresh proxy login registers a new device ID with Amazon. That is harmless, but it is noted here.
   - The default login page language is `de_DE` (`alexa-cookie.js` `amazonPageProxyLanguage`). The bridge sets it from `ALEXA_LOCALE`.
   - Starting the proxy makes no outbound requests. Amazon is contacted only when a browser loads the proxy URL (verified in `test/login.test.js`).
+- **Node 27 incompatibility (H, found in the first live login on 2026-11-20).** alexa-cookie2 5.0.6 depends on `http-proxy-response-rewrite@0.0.1` (last published 2022). Its `index.js:16` calls `zlib.Gunzip()` without `new`. Node 24.22.3 allows this with a DEP0184 warning; Node 27.0.0-alpha throws `Class constructor Gunzip cannot be invoked without 'new'` on the first gzip response from Amazon. That crashes the proxy, and the browser then gets ERR_CONNECTION_REFUSED. Mitigations: `.nvmrc` pins Node 24, and `npm run login` refuses to start on Node 27+. Revisit when alexa-cookie2 replaces that dependency.
 - **echo-speaks-server API security (H, informative).** `GET /cookieData` returns the stored cookie session **without authentication** (`echo-speaks-server/index.js:150-153`). Our bridge must not repeat this: no cookie read-back endpoint at all.
 
 ## 3. Echo Speaks code paths (Hubitat side)

@@ -9,7 +9,7 @@ import { mkdtemp, readFile, stat, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { loadConfig } from '../src/config.js';
-import { loginOptions, runLogin } from '../src/login.js';
+import { assertSupportedNode, loginOptions, runLogin } from '../src/login.js';
 
 const TOKEN = 't'.repeat(40);
 
@@ -113,4 +113,10 @@ test('real alexa-cookie2 proxy starts on the configured bind/port, then times ou
   await stat(join(dir, 'data', 'alexa-former-data.json'));
   outbound.mock.restore();
   await rm(dir, { recursive: true });
+});
+
+test('login refuses Node 27+, where the proxy dependency crashes', () => {
+  assert.doesNotThrow(() => assertSupportedNode('24.22.3'));
+  assert.doesNotThrow(() => assertSupportedNode('26.13.0'));
+  assert.throws(() => assertSupportedNode('27.0.0-alpha.0.0.0'), /Node 24 LTS/);
 });
