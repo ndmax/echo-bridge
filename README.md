@@ -271,9 +271,19 @@ Build for both common architectures and push to Docker Hub, tagged with the `pac
 npm test                                   # on Node 24
 VERSION=$(node -p "require('./package.json').version")
 docker login                               # once, as endiemachswell
+# On an x86 machine, register the arm64 (QEMU) emulator. It lasts until reboot.
+# Check with `docker buildx ls`: the builder's platforms should include linux/arm64.
+docker run --privileged --rm tonistiigi/binfmt --install arm64
 docker buildx create --use --name echo-bridge-builder 2>/dev/null || docker buildx use echo-bridge-builder
 docker buildx build --platform linux/amd64,linux/arm64 \
   -t endiemachswell/echo-bridge:$VERSION -t endiemachswell/echo-bridge:latest --push .
+```
+Optional cleanup afterwards:
+```bash
+docker buildx rm echo-bridge-builder
+docker rmi moby/buildkit:buildx-stable-1
+docker run --privileged --rm tonistiigi/binfmt --uninstall qemu-aarch64
+docker rmi tonistiigi/binfmt:latest
 ```
 Bump `version` in `package.json` before each release so every published tag is unique. `.dockerignore` keeps `.env`, `data/` and `references/` out of the image; never build from a folder where secrets could slip past it.
 
