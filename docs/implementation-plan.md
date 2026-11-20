@@ -17,7 +17,7 @@ Rule Machine ─▶ Hubitat child device (speak / playMp3)
 | `GET /health` | – | `{ok:true, amazon:"ready"\|"login-required"}` | – |
 | `GET /devices` | – | `{devices:[{id, name, family, online}]}` (id = serial) | 401, 503 not logged in |
 | `POST /speak` | `{targets:[id…], text}` | `{accepted:true, mode:"speak"\|"announcement", targets:n}` | 400, 401, 403 non-allowlisted, 429, 502, 503 |
-| `POST /play` | `{target:id, url}` | `{accepted:true, verified:false}` | 400, 401, 403, 429, 502, 503 |
+| `POST /play` | `{target:id, url}` | `{accepted:true}` | 400, 401, 403, 429, 502, 503 |
 
 `accepted` means Amazon accepted the sequence; it does not prove audible output.
 

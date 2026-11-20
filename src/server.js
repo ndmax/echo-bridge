@@ -82,13 +82,13 @@ export function createBridgeServer({ config, alexa, limiter, log = console.log }
       return { accepted: true, mode: result.mode, targets: targets.length };
     },
 
-    // UNVERIFIED on hardware: "accepted" only means Amazon accepted the request.
+    // Like /speak, "accepted" means Amazon accepted the request; Amazon reports nothing about playback.
     'POST /play': async (req) => {
       const body = await readJsonBody(req);
       const target = validateDeviceId(body.target, config.allowedDeviceIds);
       const url = validateMediaUrl(body.url, config);
       await runAmazonAction(() => alexa.playMp3(target, url));
-      return { accepted: true, verified: false };
+      return { accepted: true };
     },
   };
 

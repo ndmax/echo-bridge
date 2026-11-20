@@ -1,4 +1,4 @@
-// MP3 playback (UNVERIFIED on hardware). These tests prove what the bridge sends and that it
+// MP3 playback (hardware-verified 2026-11-20 on one Echo; see docs/feasibility.md). These tests prove what the bridge sends and that it
 // never contacts the media host; they cannot prove an Echo plays the file.
 import { test, beforeEach, afterEach, mock } from 'node:test';
 import assert from 'node:assert/strict';
@@ -71,7 +71,7 @@ test('play: one Alexa.Speak POST to Amazon carrying the SSML; media host never c
   await withServer(client, async (play) => {
     const res = await play({ target: 'OFFICE3', url: URL_OK });
     assert.equal(res.status, 200);
-    assert.deepEqual(await res.json(), { accepted: true, verified: false });
+    assert.deepEqual(await res.json(), { accepted: true });
   });
   assert.equal(requests.length, 1);
   assert.equal(requests[0].host, 'alexa.amazon.com');

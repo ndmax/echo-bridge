@@ -15,8 +15,10 @@ Plan: milestones M0–M7 (setup → research → bridge skeleton → TTS/zones �
 
 - **M5 MP3 (bridge side)**: `POST /play {target,url}` → one `Alexa.Speak` with `<speak><audio src="URL"/></speak>` (URL XML-escaped, 250-char SSML limit). Disabled unless `MEDIA_HOST_ALLOWLIST` is set. Response `{accepted:true, verified:false}`. Bridge never fetches the URL. 36 tests pass on Node 24. **MP3 VERIFIED-HW 2026-11-20** (played on one Echo; the first attempts failed only because the bridge wasn't restarted and `MEDIA_HOST_ALLOWLIST` was empty).
 
+- **M6 Hubitat**: `hubitat/echo-bridge-app.groovy` (bridge URL + token, device picker from `/devices`, up to 10 zones of 2-10 Echos, creates/removes children, makes all HTTP calls with `asynchttpPost`) and `hubitat/echo-bridge-device.groovy` (`SpeechSynthesis` `speak`, `playMp3` on single Echos only, `lastResult` attribute). `/play` now returns `{accepted:true}`. Checked: groovyc 2.5 compile + a throwaway stubbed-API harness (23 checks) in Docker; 36 Node tests on Node 24. **Not yet installed on a real hub.**
+
 ## Next
-- **M6 Hubitat**: parent app + one driver (`speak`, `playMp3`).
+- Install on Hubitat (user) once the bridge is reachable over HTTPS; then **M7** packaging and docs (Dockerfile/compose, README, NPM setup, status.md).
 
 ## Decisions made
 - PROJECT_BRIEF.md wins on MP3: build `/play` only if a real mechanism is proven; UNVERIFIED until heard on an Echo.

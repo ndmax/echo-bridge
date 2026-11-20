@@ -62,8 +62,8 @@ function escapeXmlAttribute(value) {
     .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 }
 
-// UNVERIFIED mechanism (docs/feasibility.md): Alexa.Speak with an SSML <audio> tag. Home
-// Assistant users report this plays public HTTPS MP3s; announcements reportedly do not.
+// Undocumented Amazon behavior, hardware-verified 2026-11-20 (docs/feasibility.md): Alexa.Speak
+// with an SSML <audio> tag plays a public HTTPS MP3. Announcements reportedly ignore <audio>.
 export function buildAudioSsml(url) {
   const ssml = `<speak><audio src="${escapeXmlAttribute(url)}"/></speak>`;
   if (ssml.length > MAX_TEXT_TO_SPEAK) {
