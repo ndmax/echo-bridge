@@ -1,0 +1,15 @@
+{
+  "name": "echo-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Minimal Hubitat-to-Alexa bridge: single-device TTS, one-call zone announcements, public HTTPS MP3 playback (unverified).",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/server.js",
+    "test": "node --test test/"
+  }
+}

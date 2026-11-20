@@ -8,6 +8,8 @@
 *.pem
 *.key
 secrets/
+# Amazon session/cookie store
+data/
 
 # Node dependencies and generated content
 node_modules/
