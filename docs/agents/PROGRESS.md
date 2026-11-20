@@ -34,6 +34,7 @@ Plan: milestones M0–M7 (setup → research → bridge skeleton → TTS/zones �
 - MP3: build `/play` + `playMp3` labeled UNVERIFIED (user approved 2026-11-20).
 - Login proxy: LAN-bound plain HTTP during login is acceptable (user's home network).
 - Distribution: Docker image on Docker Hub as `endiemachswell/echo-bridge`, tags `<package version>` + `latest`, multi-arch amd64+arm64 (user, 2026-11-20).
+- Repository layout (user, 2026-11-20): agent working files (this file, CLAUDE.md, AGENTS.md, PROJECT_BRIEF.md, START_PROMPT.md, README-SETUP.md) live in `docs/agents/`; commit email is the GitHub no-reply address; GitHub repo `ndmax/echo-bridge` (private).
 - Single-device TTS uses `Alexa.Speak` (no chime); zones use one announcement (chime).
 
 ## Open decisions

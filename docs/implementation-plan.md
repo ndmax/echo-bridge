@@ -39,4 +39,4 @@ Rule Machine ─▶ Hubitat child device (speak / playMp3)
 - `Dockerfile`, `docker-compose.yml`, `.dockerignore`, `.env.example`, `.nvmrc`, `README.md`.
 
 ## Milestones
-M2 skeleton → M3 transport + /devices + /speak → M4 login → M5 /play (UNVERIFIED) → M6 Hubitat → M7 packaging and docs. Details and status are in `PROGRESS.md` and `status.md`.
+M2 skeleton → M3 transport + /devices + /speak → M4 login → M5 /play (UNVERIFIED) → M6 Hubitat → M7 packaging and docs. Details and status are in `agents/PROGRESS.md` and `status.md`.
