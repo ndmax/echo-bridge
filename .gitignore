@@ -1,0 +1,27 @@
+# Read-only clones for research; never commit third-party source repositories
+/references/
+
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Node dependencies and generated content
+node_modules/
+dist/
+build/
+coverage/
+*.log
+npm-debug.log*
+
+# Editor and OS configuration
+.vscode/
+.idea/
+.DS_Store
+
+# Development scratch
+.tmp/
+tmp/
