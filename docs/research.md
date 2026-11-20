@@ -51,6 +51,11 @@ Confidence legend: **H** = read directly in source/official docs; **M** = third-
 
   Either way it runs **only on demand** and shuts down after cookies are captured. The password goes through the proxy process memory (unavoidable with any proxy login), but our code never reads, stores or logs it.
 - **Re-auth/2FA (H/M).** Amazon 2FA happens in the proxied Amazon page. Afterwards `cookieData` (including `formerRegistrationData`, refresh token, `macDms`) is reused for automatic cookie refresh (`cookieRefreshInterval`, example default 7 days; `example/example.js:39-43`). When refresh fails, the user repeats the proxy login.
+- **alexa-cookie2 quirks found while building `npm run login` (H, `node_modules/alexa-cookie2/lib/proxy.js:116-180`).**
+  - The proxy writes device-registration data (`deviceId`, `frc`, `map-md`) to `formerDataStorePath`, which defaults to a file inside `node_modules`. Write errors are silently ignored. The bridge points it at the data dir and creates that dir (0700) before starting the proxy.
+  - When it reads that data back, it uses the *default* path, not `formerDataStorePath` (line 121). So with a custom path, each fresh proxy login registers a new device ID with Amazon. That is harmless, but it is noted here.
+  - The default login page language is `de_DE` (`alexa-cookie.js` `amazonPageProxyLanguage`). The bridge sets it from `ALEXA_LOCALE`.
+  - Starting the proxy makes no outbound requests. Amazon is contacted only when a browser loads the proxy URL (verified in `test/login.test.js`).
 - **echo-speaks-server API security (H, informative).** `GET /cookieData` returns the stored cookie session **without authentication** (`echo-speaks-server/index.js:150-153`). Our bridge must not repeat this: no cookie read-back endpoint at all.
 
 ## 3. Echo Speaks code paths (Hubitat side)

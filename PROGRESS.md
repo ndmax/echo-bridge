@@ -9,8 +9,10 @@ Plan: milestones M0–M7 (setup → research → bridge skeleton → TTS/zones �
 
 - **M3 Amazon transport**: `src/alexa.js` (alexa-remote2 8.1.1, pinned). Builds its own `Alexa.Speak` / `AlexaAnnouncement` nodes (configurable locale), sends one `POST /api/behaviors/preview` with library retries disabled. Tests stub `https.request` and assert one outbound request per action (zone included); mutation-checked. 26 tests pass.
 
+- **M4 Login**: `src/login.js` / `npm run login` — alexa-remote2 proxy-only login on the LAN (plain HTTP, 10-minute limit, stops after success), no logger, session saved 0600 in a 0700 dir. Bridge loads it on restart. 31 tests pass; real proxy start/stop tested on loopback without contacting Amazon. Real sign-in NOT yet performed (needs user).
+
 ## Next
-- **M4 Login**: `npm run login` using alexa-cookie2's proxy on the LAN; save session to `COOKIE_FILE` (0600).
+- **M5 MP3**: `POST /play` + `playMp3` via `Alexa.Speak` SSML `<audio>`, labeled UNVERIFIED.
 
 ## Decisions made
 - PROJECT_BRIEF.md wins on MP3: build `/play` only if a real mechanism is proven; UNVERIFIED until heard on an Echo.

@@ -52,5 +52,7 @@ export function loadConfig(env = process.env) {
 
     loginProxyIp: env.LOGIN_PROXY_IP || '',
     loginProxyPort: int(env, 'LOGIN_PROXY_PORT', 3457, 1, 65535),
+    // 0.0.0.0 = reachable from the LAN while `npm run login` runs (plain HTTP).
+    loginProxyBind: env.LOGIN_PROXY_BIND || '0.0.0.0',
   };
 }

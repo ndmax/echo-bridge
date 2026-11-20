@@ -10,6 +10,7 @@
   },
   "scripts": {
     "start": "node --env-file-if-exists=.env src/server.js",
+    "login": "node --env-file-if-exists=.env src/login.js",
     "test": "node --test test/"
   },
   "dependencies": {
