@@ -4,9 +4,10 @@ Plan: milestones M0–M7 (setup → research → bridge skeleton → TTS/zones �
 
 ## Done
 - **M0 Setup**: git repo initialized; references cloned (ignored); CLAUDE.md and PROGRESS.md created.
+- **M1 Research**: `docs/research.md`, `docs/feasibility.md`, `docs/implementation-plan.md`. TTS + zone = VERIFIED-SOURCE (one `/api/behaviors/preview` POST). MP3 = PLAUSIBLE via `Alexa.Speak` + SSML `<audio>` (third-party hardware reports), UNVERIFIED by us.
 
 ## Next
-- **M1 Research**: trace upstream code, evaluate alexa-remote2, write `docs/research.md`, `docs/feasibility.md`, `docs/implementation-plan.md`. Ends with the MP3 verdict.
+- **M2 Bridge skeleton**: config, auth, validation, limiter, `/health`, tests.
 
 ## Decisions made
 - PROJECT_BRIEF.md wins on MP3: build `/play` only if a real mechanism is proven; UNVERIFIED until heard on an Echo.
@@ -16,4 +17,6 @@ Plan: milestones M0–M7 (setup → research → bridge skeleton → TTS/zones �
 - README-SETUP's "Run Codex" step skipped (not applicable).
 
 ## Open decisions
-- None yet.
+- MP3: proceed with `/play` labeled UNVERIFIED (recommended in feasibility.md) — awaiting user OK.
+- Login proxy access: SSH tunnel to loopback (recommended) vs LAN-bound HTTP during login.
+- Single-device TTS uses `Alexa.Speak` (no chime); zones use announcement (chime).
