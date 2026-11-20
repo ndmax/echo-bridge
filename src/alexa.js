@@ -54,6 +54,24 @@ export function buildAnnouncementNode(devices, text, locale) {
   };
 }
 
+// alexa-remote2 and Amazon cap textToSpeak at 250 characters, SSML wrapper included.
+export const MAX_TEXT_TO_SPEAK = 250;
+
+function escapeXmlAttribute(value) {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
+
+// UNVERIFIED mechanism (docs/feasibility.md): Alexa.Speak with an SSML <audio> tag. Home
+// Assistant users report this plays public HTTPS MP3s; announcements reportedly do not.
+export function buildAudioSsml(url) {
+  const ssml = `<speak><audio src="${escapeXmlAttribute(url)}"/></speak>`;
+  if (ssml.length > MAX_TEXT_TO_SPEAK) {
+    throw new BridgeError(400, 'bad_request', 'url is too long for Alexa (250-character SSML limit)');
+  }
+  return ssml;
+}
+
 export function buildPreviewRequest(node) {
   const sequence = { '@type': 'com.amazon.alexa.behaviors.model.Sequence', startNode: node };
   return { behaviorId: 'PREVIEW', sequenceJson: JSON.stringify(sequence), status: 'ENABLED' };
@@ -156,6 +174,14 @@ export class AlexaClient {
     }
     await this.sendPreview(buildAnnouncementNode(devices, text, this.config.alexaLocale));
     return { mode: 'announcement' };
+  }
+
+  // Passes the URL to Amazon only; the bridge never fetches, proxies or caches the media.
+  async playMp3(target, url) {
+    this.requireReady();
+    const device = this.device(target);
+    await this.sendPreview(buildSpeakNode(device, buildAudioSsml(url), this.config.alexaLocale));
+    return { mode: 'ssml-audio' };
   }
 
   // The single outbound Amazon operation. isRetry:true disables alexa-remote2's own delayed

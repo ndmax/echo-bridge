@@ -45,6 +45,9 @@ function isIpLiteral(hostname) {
 // The bridge never fetches the URL; these checks only make sure we hand Amazon
 // a public, permanent, credential-free HTTPS MP3 link on an allowlisted host.
 export function validateMediaUrl(rawUrl, { mediaHostAllowlist, maxUrlLength }) {
+  if (mediaHostAllowlist.size === 0) {
+    throw new BridgeError(403, 'playback_disabled', 'MP3 playback is disabled: set MEDIA_HOST_ALLOWLIST');
+  }
   if (typeof rawUrl !== 'string' || !rawUrl) throw badRequest('url must be a non-empty string');
   if (rawUrl.length > maxUrlLength) throw badRequest(`url must be at most ${maxUrlLength} characters`);
   if (/\s/.test(rawUrl)) throw badRequest('url must not contain whitespace');

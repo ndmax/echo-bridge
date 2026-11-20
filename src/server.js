@@ -1,5 +1,5 @@
 // Small authenticated LAN API used by the Hubitat driver.
-// Routes: GET /health, GET /devices, POST /speak (see docs/implementation-plan.md).
+// Routes: GET /health, GET /devices, POST /speak, POST /play (see docs/implementation-plan.md).
 import http from 'node:http';
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
@@ -7,7 +7,7 @@ import { AlexaClient } from './alexa.js';
 import { loadConfig } from './config.js';
 import { BridgeError, badRequest } from './errors.js';
 import { RateLimiter } from './rate-limit.js';
-import { validateTargets, validateText } from './validate.js';
+import { validateDeviceId, validateMediaUrl, validateTargets, validateText } from './validate.js';
 
 const MAX_BODY_BYTES = 4096;
 
@@ -80,6 +80,15 @@ export function createBridgeServer({ config, alexa, limiter, log = console.log }
       const text = validateText(body.text, config.maxTextLength);
       const result = await runAmazonAction(() => alexa.speak(targets, text));
       return { accepted: true, mode: result.mode, targets: targets.length };
+    },
+
+    // UNVERIFIED on hardware: "accepted" only means Amazon accepted the request.
+    'POST /play': async (req) => {
+      const body = await readJsonBody(req);
+      const target = validateDeviceId(body.target, config.allowedDeviceIds);
+      const url = validateMediaUrl(body.url, config);
+      await runAmazonAction(() => alexa.playMp3(target, url));
+      return { accepted: true, verified: false };
     },
   };
 

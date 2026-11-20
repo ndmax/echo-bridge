@@ -13,8 +13,10 @@ Plan: milestones M0–M7 (setup → research → bridge skeleton → TTS/zones �
 
 - **Live checks (2026-11-20, Node 24.22.3)**: login OK; bridge loads the session (`/health` ready); `/devices` worked (filter fixed to drop WHA groups and VOX app entries); **single-device speak VERIFIED-HW** (<1 s, English, no chime); **2-device zone VERIFIED-HW** (one request, played immediately on both).
 
+- **M5 MP3 (bridge side)**: `POST /play {target,url}` → one `Alexa.Speak` with `<speak><audio src="URL"/></speak>` (URL XML-escaped, 250-char SSML limit). Disabled unless `MEDIA_HOST_ALLOWLIST` is set. Response `{accepted:true, verified:false}`. Bridge never fetches the URL. 36 tests pass on Node 24. **Hardware test pending (needs user's public MP3).**
+
 ## Next
-- **M5 MP3**: `POST /play` + `playMp3` via `Alexa.Speak` SSML `<audio>`, labeled UNVERIFIED.
+- Live MP3 test on one Echo; then **M6 Hubitat** app + driver (`playMp3` only if the live test passes).
 
 ## Decisions made
 - PROJECT_BRIEF.md wins on MP3: build `/play` only if a real mechanism is proven; UNVERIFIED until heard on an Echo.
