@@ -11,7 +11,10 @@ Plan: milestones M0–M7 (setup → research → bridge skeleton → TTS/zones �
 
 - **M4 Login**: `src/login.js` / `npm run login` — alexa-remote2 proxy-only login on the LAN (plain HTTP, 10-minute limit, stops after success), no logger, session saved 0600 in a 0700 dir. Bridge loads it on restart. 31 tests pass; real proxy start/stop tested on loopback without contacting Amazon. Live login on Node 24.22.3 completed in the browser on 2026-11-20 (the first attempt on Node 27 alpha crashed in an alexa-cookie2 dependency; login now refuses Node 27+, `.nvmrc` pins 24). Awaiting CLI output, `/health`, and `data/` permissions to confirm the session was saved and loads.
 
+- **Live checks (2026-11-20, Node 24.22.3)**: login OK; bridge loads the session (`/health` ready); `/devices` worked (filter fixed to drop WHA groups and VOX app entries); **single-device speak VERIFIED-HW** on one Echo.
+
 ## Next
+- Live zone test (2 Echos, one announcement).
 - **M5 MP3**: `POST /play` + `playMp3` via `Alexa.Speak` SSML `<audio>`, labeled UNVERIFIED.
 
 ## Decisions made

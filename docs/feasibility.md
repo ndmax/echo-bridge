@@ -7,13 +7,13 @@ Sources and line references are in [research.md](research.md). Status vocabulary
 - **UNVERIFIED**: untested.
 - **BLOCKED**: no viable mechanism.
 
-Nothing here is VERIFIED-HW yet. Real-device tests need your authorization.
+Real-device tests are run by the user. Individual TTS is VERIFIED-HW as of 2026-11-20; the others are pending.
 
 ## Feature / transport matrix
 
 | Feature | Candidate mechanism | Evidence | Mock test | Real device test | Status |
 |---|---|---|---|---|---|
-| Individual TTS | One `POST /api/behaviors/preview` with an `Alexa.Speak` node (skill `amzn1.ask.1p.saysomething`), one target | alexa-remote2 `speak` builder (`alexa-remote.js:2843-2885`); Echo Speaks `speak()` uses the same family | Planned M3: one outbound POST with the expected node | Pending (user) | VERIFIED-SOURCE; hardware UNVERIFIED |
+| Individual TTS | One `POST /api/behaviors/preview` with an `Alexa.Speak` node (skill `amzn1.ask.1p.saysomething`), one target | alexa-remote2 `speak` builder (`alexa-remote.js:2843-2885`); Echo Speaks `speak()` uses the same family | M3: one outbound POST with the expected node (`test/alexa.test.js`) | 2026-11-20: Office Echo spoke the text; bridge returned `{"accepted":true,"mode":"speak","targets":1}` | **VERIFIED-HW** |
 | Multi-device TTS (one call) | One `POST /api/behaviors/preview` with **one** `AlexaAnnouncement` node whose `target.devices` lists every Echo | alexa-remote2 array branch (`alexa-remote.js:2925-2980`, README "multiple devices using one command"); Echo Speaks zones use the same (`echo-speaks-zones.groovy:1384-1390`) | Planned M3: exactly one outbound POST containing all serials; no per-device fallback on error/429 | Pending (user) | VERIFIED-SOURCE (single request); hardware UNVERIFIED |
 | Public HTTPS MP3 URL on Echo | One `POST /api/behaviors/preview` with an `Alexa.Speak` node whose `textToSpeak` is `<speak><audio src="URL"/></speak>`, one target | Same payload as Home Assistant AMP "tts" (alexapy `alexaapi.py:1076-1137`); real-Echo success reported in supernotify PR #224 (2026-09-25) and AMP #1412; the announcement variant reported **not** to play audio | Planned M5: URL validation; one outbound POST with an SSML payload; no fetch of the URL | Pending (user, with a public MP3) | PLAUSIBLE: **UNVERIFIED until heard** |
 
