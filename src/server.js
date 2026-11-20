@@ -122,13 +122,24 @@ export function createBridgeServer({ config, alexa, limiter, log = console.log }
 }
 
 async function main() {
+  // Session files hold Amazon cookies: everything this process creates is owner-only.
+  process.umask(0o077);
   const config = loadConfig();
   const alexa = new AlexaClient({ config });
   const server = createBridgeServer({ config, alexa });
+  server.on('error', (err) => {
+    console.error(err.code === 'EADDRINUSE' ? `port ${config.port} is already in use (is another bridge running?)` : `server error: ${err.code || err.name}`);
+    process.exit(1);
+  });
   server.listen(config.port, config.host, () => console.log(`echo-bridge listening on ${config.host}:${config.port}`));
+  // As PID 1 in a container Node gets no default SIGTERM handling; exit promptly on stop.
+  for (const signal of ['SIGTERM', 'SIGINT']) {
+    process.on(signal, () => server.close(() => process.exit(0)));
+  }
   // Serve /health immediately; speech routes return 503 until the saved session is loaded.
   const connected = await alexa.connect();
-  console.log(connected ? 'Amazon session ready' : 'Amazon login required: run "npm run login"');
+  console.log(connected ? 'Amazon session ready'
+    : 'Amazon login required: run "npm run login" (Docker: docker exec -it echo-bridge node src/login.js), then restart');
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {

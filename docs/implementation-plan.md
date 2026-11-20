@@ -28,13 +28,15 @@ Rule Machine ─▶ Hubitat child device (speak / playMp3)
 
 ## Files
 - `src/config.js`: reads and validates env.
-- `src/validate.js`: pure validators.
-- `src/alexa.js`: login, device list, `buildSpeakNode`, `buildAnnouncementNode`, `sendSequence` (single POST, `isRetry:true`).
-- `src/server.js`: routes, auth, limiter, error mapping.
-- `src/login.js`: on-demand proxy login CLI (`npm run login`).
-- `test/*.test.js`: node:test.
+- `src/errors.js`: `BridgeError` carrying an HTTP status and code.
+- `src/validate.js`: pure validators (text, targets, media URL).
+- `src/rate-limit.js`: inbound token bucket plus Amazon-throttle cooldown.
+- `src/alexa.js`: alexa-remote2 wrapper. Builds the `Alexa.Speak` / `AlexaAnnouncement` nodes and sends a single preview POST with library retries off.
+- `src/server.js`: routes, auth, error mapping, startup.
+- `src/login.js`: on-demand proxy login (`npm run login`).
+- `test/*.test.js`: node:test, with Amazon mocked at `https.request`.
 - `hubitat/echo-bridge-app.groovy`, `hubitat/echo-bridge-device.groovy`.
-- `Dockerfile`, `docker-compose.yml`, `.env.example`, `README.md`.
+- `Dockerfile`, `docker-compose.yml`, `.dockerignore`, `.env.example`, `.nvmrc`, `README.md`.
 
 ## Milestones
 M2 skeleton → M3 transport + /devices + /speak → M4 login → M5 /play (UNVERIFIED) → M6 Hubitat → M7 packaging and docs. Details and status are in `PROGRESS.md` and `status.md`.

@@ -1,0 +1,11 @@
+.git
+.env
+.env.*
+data/
+references/
+node_modules/
+test/
+docs/
+hubitat/
+.tmp/
+*.log

@@ -1,0 +1,28 @@
+# Echo Bridge — Docker Compose / Portainer stack.
+#
+# Values come from environment variables: a .env file next to this file (docker compose), or
+# the "Environment variables" section of a Portainer stack. See .env.example for all settings.
+services:
+  echo-bridge:
+    build: .
+    image: echo-bridge:local
+    container_name: echo-bridge
+    restart: unless-stopped
+    # Must own the data directory on the host (e.g. 1000:1000; on Unraid usually 99:100).
+    user: "${PUID:-1000}:${PGID:-1000}"
+    environment:
+      BRIDGE_TOKEN: ${BRIDGE_TOKEN:?set BRIDGE_TOKEN (openssl rand -hex 32)}
+      ALLOWED_DEVICE_IDS: ${ALLOWED_DEVICE_IDS:-}
+      MEDIA_HOST_ALLOWLIST: ${MEDIA_HOST_ALLOWLIST:-}
+      AMAZON_PAGE: ${AMAZON_PAGE:-amazon.com}
+      ALEXA_LOCALE: ${ALEXA_LOCALE:-en-US}
+      # LAN address of the Docker host, used only while running the login command.
+      LOGIN_PROXY_IP: ${LOGIN_PROXY_IP:-}
+    volumes:
+      - ${DATA_DIR:-./data}:/app/data
+    ports:
+      # Bridge API (plain HTTP). Put an HTTPS reverse proxy in front of it for Hubitat.
+      - "${BRIDGE_PORT:-3456}:3456"
+      # Login proxy: only listens while the login command runs. Host and container port must
+      # match because the login proxy checks the address your browser used.
+      - "3457:3457"

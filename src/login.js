@@ -85,10 +85,12 @@ export function assertSupportedNode(version = process.versions.node) {
 
 async function main() {
   assertSupportedNode();
+  // Includes alexa-cookie2's own registration file, which it writes with default permissions.
+  process.umask(0o077);
   const config = loadConfig();
   const deviceCount = await runLogin({ config });
   console.log(`Login complete. Session saved to ${config.cookieFile}; ${deviceCount} Alexa devices found.`);
-  console.log('Restart the bridge so it loads the new session.');
+  console.log('Restart the bridge so it loads the new session (Docker: docker restart echo-bridge).');
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
