@@ -28,7 +28,9 @@ Plan: milestones M0–M7 (setup → research → bridge skeleton → TTS/zones �
 - **Deployed (2026-11-21)**: user installed 0.1.2 on Unraid behind HTTPS, logged in, installed the Hubitat app and driver; **single-Echo TTS and MP3 played from the hub (VERIFIED-HW)**. Deployment issues were all on the setup side: the CSP upgrade (fixed in 0.1.1), and `PUID`/`PGID` not reaching the container, which left it as 1000:1000 against a root-owned `DATA_DIR` (fixed by the user's settings).
 
 ## Next
-- User: test zone `speak` from the hub, `lastResult`, and a Rule Machine action (docs/status.md "Outstanding steps").
+- Zone `speak` from the hub VERIFIED-HW (2026-11-21); the user tried `playMp3` on a zone and it was refused by design.
+- User (optional): one Rule Machine action of each kind.
+- Open idea, not planned: research whether the one-request announcement operation can carry `<audio>` for zone MP3.
 
 ## Decisions made
 - PROJECT_BRIEF.md wins on MP3: build `/play` only if a real mechanism is proven; UNVERIFIED until heard on an Echo.
