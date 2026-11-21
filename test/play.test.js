@@ -1,4 +1,4 @@
-// MP3 playback (hardware-verified 2026-11-20 on one Echo; see docs/feasibility.md). These tests prove what the bridge sends and that it
+// MP3 playback (hardware-verified 2026-11-20 on one Echo; see docs/research.md §4). These tests prove what the bridge sends and that it
 // never contacts the media host; they cannot prove an Echo plays the file.
 import { test, beforeEach, afterEach, mock } from 'node:test';
 import assert from 'node:assert/strict';

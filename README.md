@@ -57,7 +57,7 @@ Verified on real hardware (2026-11-20 and 2026-11-21, one Amazon US account):
 | MP3 from a public HTTPS URL | Played immediately and completely |
 | Hubitat app and driver | Installed and tested on a Hubitat hub: speech on one Echo, zone speech, and `playMp3` all played (zone `playMp3` is refused by design) |
 
-Details and sources are in [`docs/feasibility.md`](docs/feasibility.md) and [`docs/status.md`](docs/status.md).
+Details are in [`docs/status.md`](docs/status.md); sources and evidence are in [`docs/research.md`](docs/research.md).
 
 ## Requirements
 

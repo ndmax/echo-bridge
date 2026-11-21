@@ -11,6 +11,10 @@ Date: 2026-11-20. Reference clones (read-only, `references/`, not committed):
 
 Confidence legend: **H** = read directly in source/official docs; **M** = third-party report or indirect evidence; **L** = inference.
 
+**Outcome (2026-11-20/21, one Amazon US account):** all three mechanisms below were confirmed on real Echos, both directly against the bridge and from a Hubitat hub. Single-device speech and MP3 used one `Alexa.Speak` node; the 2-Echo zone used one `AlexaAnnouncement` node in one request. All three still depend on Amazon's undocumented Alexa app API. Current per-feature status is in [`status.md`](status.md).
+
+The rest of this file is the research as written before building. Statements such as "not verified by us" describe that point in time; corrections found later are marked with their date.
+
 ## 1. alexa-remote2 (the library we will wrap)
 
 - **Version/maintenance (H).** npm `alexa-remote2@8.1.1`, published 2026-08-15, MIT, `engines.node >=16`. It depends on `alexa-cookie2@5.0.6` (also 2026-08-15, MIT). Recent changelog entries are login fixes: 8.0.5 "Fix Amazon login proxy auth flow" (2026-07-05) and 8.1.1 "Alexa-Cookie fixes for 2FA and redirects during Logins" (`references/alexa-remote/README.md:46-56`). The library is actively maintained (it is the ioBroker Alexa adapter's backend).
@@ -86,6 +90,9 @@ Confidence legend: **H** = read directly in source/official docs; **M** = third-
   - node-red alexa-remote2 issue #18 (2021) confirms `<audio>` is ignored in the announcement/routine node.
 
   **Conclusion:** the plausible mechanism is `Alexa.Speak` with `textToSpeak = <speak><audio src="URL"/></speak>` to **one** device. It is undocumented, not verified by us, and capped at **250 characters including the SSML wrapper**, so URLs must be ≤ about 220 characters. The MP3 should follow the SSML `<audio>` format rules above.
+
+  **Result (2026-11-20, H on our hardware):** `/play` to one Echo with the user's ffmpeg-converted (48 kbps, 24 kHz) MP3, hosted on their own public HTTPS domain, played immediately and completely. Confirmed again from the Hubitat hub on 2026-11-21. Zones stay speech-only: there is no proven single-request multi-Echo MP3 mechanism (announcements ignore `<audio>`).
+- **Fallback if Amazon breaks this path (not built).** A Voice Monkey "trigger" called with the URL, or one user-created Alexa routine. The official mechanisms need a custom skill, which is out of scope.
 - **Voice Monkey (H, https://voicemonkey.io/docs/media).** It requires a public HTTPS URL, MP3/MP4 at 44.1/48 kHz, at most 240 s (longer only via its "Long audio" node). It is a separate skill-based service; its success says nothing about the unofficial preview endpoint.
 
 ## 5. Rate limits and latency

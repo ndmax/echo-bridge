@@ -1,5 +1,5 @@
 // Small authenticated LAN API used by the Hubitat driver.
-// Routes: GET /health, GET /devices, POST /speak, POST /play (see docs/implementation-plan.md).
+// Routes: GET /health, GET /devices, POST /speak, POST /play (see "Bridge API" in README.md).
 import http from 'node:http';
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { pathToFileURL } from 'node:url';

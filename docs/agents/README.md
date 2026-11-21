@@ -1,14 +1,11 @@
 # Agent working files
 
-Files used to plan and build this project with AI coding assistants (Codex, Claude Code). They are kept for history and are not needed to run or use Echo Bridge.
+Files used to build and maintain this project with AI coding assistants. They are not needed to run or use Echo Bridge.
 
 | File | Purpose |
 |---|---|
-| `PROJECT_BRIEF.md` | Original requirements: the source of truth for scope |
-| `AGENTS.md` | Original Codex instructions |
-| `CLAUDE.md` | Claude Code instructions, derived from `AGENTS.md` |
-| `START_PROMPT.md` | Prompt used to start the first session |
-| `README-SETUP.md` | Original workspace setup notes |
-| `PROGRESS.md` | Milestone log: done, next, decisions |
+| `CLAUDE.md` | Claude Code instructions for maintaining the project |
+| `PROJECT_BRIEF.md` | Original requirements: the scope document |
+| `PROGRESS.md` | Decisions made, and what's next |
 
-Detailed feature status lives in [`../status.md`](../status.md). All files in this folder refer to each other by bare filename, meaning this folder.
+`PROJECT_BRIEF.md` is kept as written; some files it names (the implementation plan and feasibility notes) were retired after release. Feature status lives in [`../status.md`](../status.md) and evidence in [`../research.md`](../research.md). Files in this folder refer to each other by bare filename.
