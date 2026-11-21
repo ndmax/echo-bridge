@@ -9,7 +9,8 @@ import { mkdtemp, readFile, stat, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { loadConfig } from '../src/config.js';
-import { assertSupportedNode, loginOptions, runLogin } from '../src/login.js';
+import http from 'node:http';
+import { assertSupportedNode, loginOptions, runLogin, stripUpgradeInsecureRequests, withoutUpgradeDirective } from '../src/login.js';
 
 const TOKEN = 't'.repeat(40);
 
@@ -119,4 +120,34 @@ test('login refuses Node 27+, where the proxy dependency crashes', () => {
   assert.doesNotThrow(() => assertSupportedNode('24.22.3'));
   assert.doesNotThrow(() => assertSupportedNode('26.13.0'));
   assert.throws(() => assertSupportedNode('27.0.0-alpha.0.0.0'), /Node 24 LTS/);
+});
+
+// Amazon's /ax/claim (email) page sends this exact header (checked 2026-11-21). Passed through,
+// it makes the browser post the email form to https://<LAN IP>:3457 -> ERR_SSL_PROTOCOL_ERROR.
+const AMAZON_CSP = 'upgrade-insecure-requests;report-uri https://metrics.media-amazon.com/';
+
+test('withoutUpgradeDirective drops only upgrade-insecure-requests', () => {
+  assert.equal(withoutUpgradeDirective(AMAZON_CSP), 'report-uri https://metrics.media-amazon.com/');
+  assert.equal(withoutUpgradeDirective("default-src 'self'; Upgrade-Insecure-Requests "), "default-src 'self'");
+  assert.equal(withoutUpgradeDirective('upgrade-insecure-requests'), null);
+  assert.equal(withoutUpgradeDirective("script-src 'self'"), "script-src 'self'");
+  assert.deepEqual(withoutUpgradeDirective([AMAZON_CSP, "img-src 'self'"]), ['report-uri https://metrics.media-amazon.com/', "img-src 'self'"]);
+});
+
+test('login proxy responses no longer tell the browser to upgrade to HTTPS', async () => {
+  class TestResponse extends http.ServerResponse {}
+  stripUpgradeInsecureRequests(TestResponse);
+  const server = http.createServer({ ServerResponse: TestResponse }, (req, res) => {
+    res.setHeader('Content-Security-Policy', AMAZON_CSP);
+    res.setHeader('Content-Security-Policy-Report-Only', "default-src 'self'");
+    res.end('ok');
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const res = await fetch(`http://127.0.0.1:${server.address().port}/`);
+    assert.equal(res.headers.get('content-security-policy'), 'report-uri https://metrics.media-amazon.com/');
+    assert.equal(res.headers.get('content-security-policy-report-only'), "default-src 'self'");
+  } finally {
+    server.close();
+  }
 });

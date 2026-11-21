@@ -5,6 +5,7 @@
 // The proxy is plain HTTP on the LAN (alexa-cookie2 hard-codes http://), runs only while this
 // command runs, and shuts down after success or LOGIN_TIMEOUT_MINUTES.
 import { chmod, mkdir, writeFile } from 'node:fs/promises';
+import http from 'node:http';
 import { dirname, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import AlexaRemote from 'alexa-remote2';
@@ -74,6 +75,33 @@ export async function runLogin({ config, remote = new AlexaRemote(), print = con
   });
 }
 
+// Amazon's sign-in pages send `Content-Security-Policy: upgrade-insecure-requests`, and
+// alexa-cookie2 passes it through. The browser then posts the email form to
+// https://<LOGIN_PROXY_IP>:<port>/, which the plain-HTTP proxy can't serve (ERR_SSL_PROTOCOL_ERROR).
+// Returns the header without that directive, or null if nothing else is left.
+export function withoutUpgradeDirective(value) {
+  if (Array.isArray(value)) return value.map(withoutUpgradeDirective).filter((v) => v !== null);
+  const kept = String(value).split(';').map((d) => d.trim())
+    .filter((d) => d && d.toLowerCase() !== 'upgrade-insecure-requests');
+  return kept.length ? kept.join('; ') : null;
+}
+
+// alexa-cookie2 has no hook for response headers, so the login process filters them as http-proxy
+// writes them. Only that one directive is dropped. Amazon's other CSP rules are report-only and
+// pass through, so script-injection protection on the sign-in page is unchanged. Unlike the old
+// /ax patch, HSTS is left alone: browsers ignore it over plain HTTP and for IP-address hosts.
+export function stripUpgradeInsecureRequests(ServerResponse = http.ServerResponse) {
+  const setHeader = ServerResponse.prototype.setHeader;
+  ServerResponse.prototype.setHeader = function (name, value) {
+    if (String(name).toLowerCase() === 'content-security-policy') {
+      const filtered = withoutUpgradeDirective(value);
+      if (filtered === null || (Array.isArray(filtered) && !filtered.length)) return this;
+      return setHeader.call(this, name, filtered);
+    }
+    return setHeader.call(this, name, value);
+  };
+}
+
 // alexa-cookie2's proxy depends on http-proxy-response-rewrite@0.0.1, which calls zlib.Gunzip()
 // without `new`. Node 24-26 only warn (DEP0184); Node 27 throws mid-login and kills the proxy.
 export function assertSupportedNode(version = process.versions.node) {
@@ -87,6 +115,7 @@ async function main() {
   assertSupportedNode();
   // Includes alexa-cookie2's own registration file, which it writes with default permissions.
   process.umask(0o077);
+  stripUpgradeInsecureRequests(); // this process serves only the login proxy
   const config = loadConfig();
   const deviceCount = await runLogin({ config });
   console.log(`Login complete. Session saved to ${config.cookieFile}; ${deviceCount} Alexa devices found.`);
