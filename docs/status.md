@@ -10,8 +10,8 @@ Last updated: 2026-11-20.
 | Zone TTS, one Amazon request | `POST /speak` with 2+ targets → one `AlexaAnnouncement` listing all devices | One outbound `https.request` with every recipient; no retry or per-device fallback on 429/401/503/400. Mutation-checked: a per-device loop and re-enabled library retries both fail the tests | 2 Echos played immediately, one request | **VERIFIED-HW** |
 | MP3 from a public HTTPS URL | `POST /play` → one `Alexa.Speak` with `<speak><audio src="URL"/></speak>` | `test/play.test.js`, `test/validate.test.js`: URL rules, XML escaping, 250-char limit, media host never contacted | User's 48 kbps / 24 kHz MP3 played immediately and completely | **VERIFIED-HW** (undocumented Amazon behavior) |
 | Amazon login | `npm run login` / `docker exec … node src/login.js` (alexa-cookie2 proxy) | `test/login.test.js`: options, file permissions, failure path, real proxy start/stop with no Amazon traffic | Completed with 2FA on Node 24.22.3; crashed on Node 27 alpha (dependency bug, now guarded) | **VERIFIED-HW** |
-| Hubitat app + driver | `hubitat/*.groovy` | groovyc 2.5 compile; throwaway stubbed-API harness (23 checks: one request per zone, local rejections, child sync, error reporting, no token or URL logging) | Not installed yet | **UNVERIFIED on a hub** |
-| Docker packaging | `Dockerfile`, `docker-compose.yml` | Image built; test container: `/health` OK, Docker healthcheck `healthy`, runs as uid 1000, login starts in the container, files owner-only, stops in under 1 s | Published 2026-11-20 as `endiemachswell/echo-bridge:0.1.0` and `:latest` (amd64 + arm64, manifest list `sha256:99d89180…`). Pulled image checked: amd64 `/health` OK, `/devices` 401 without token, runs as uid 1000; arm64 starts Node 24.22.3 under emulation. Not deployed to the homelab yet | Published; deploy pending |
+| Hubitat app + driver | `hubitat/*.groovy` | groovyc 2.5 compile; throwaway stubbed-API harness (23 checks: one request per zone, local rejections, child sync, error reporting, no token or URL logging) | Installed on the user's hub 2026-11-21 (via the Unraid deployment, 0.1.2): single-Echo TTS and `playMp3` played. Zone `speak` from the hub not yet reported | **VERIFIED-HW** (TTS, MP3); zone from hub pending |
+| Docker packaging | `Dockerfile`, `docker-compose.yml` | Image built; test container: `/health` OK, Docker healthcheck `healthy`, runs as uid 1000, login starts in the container, files owner-only, stops in under 1 s | Published 2026-11-20 as `endiemachswell/echo-bridge:0.1.0` and `:latest` (amd64 + arm64, manifest list `sha256:99d89180…`). Pulled image checked: amd64 `/health` OK, `/devices` 401 without token, runs as uid 1000; arm64 starts Node 24.22.3 under emulation. Deployed on Unraid 2026-11-21 as 0.1.2 behind HTTPS; login, TTS, and MP3 work end to end | **VERIFIED-HW** (Unraid) |
 
 ## Test results (Node 24.22.3)
 
@@ -38,10 +38,9 @@ Static and dependency review:
 
 ## Outstanding steps (user)
 
-1. Deploy the container on Unraid/Portainer (README §1) and copy the existing session from `./data` into the container's data folder, or log in again.
-2. Set up the HTTPS endpoint for the bridge (README §3, NGINX Proxy Manager example).
-3. Install the Hubitat driver and app (README §4). Then test single-Echo `speak`, zone `speak`, `playMp3`, the `lastResult` attribute, and one Rule Machine action of each kind.
-4. Optional: a 3+ device zone test, and a check of how simultaneous zone playback sounds across rooms.
+1. ~~Deploy on Unraid, HTTPS, install the Hubitat app and driver~~ — done 2026-11-21; single-Echo TTS and `playMp3` played from the hub.
+2. From the hub: test zone `speak`, the `lastResult` attribute, and one Rule Machine action of each kind.
+3. Optional: a 3+ device zone test, and a check of how simultaneous zone playback sounds across rooms.
 
 ## Next actions
 

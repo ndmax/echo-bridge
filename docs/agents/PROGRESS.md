@@ -25,9 +25,10 @@ Plan: milestones M0–M7 (setup → research → bridge skeleton → TTS/zones �
 
 - **0.1.2 (2026-11-21)**: login probes the data folder before starting the proxy, and write errors now name the code, path, and uid/gid. Published `endiemachswell/echo-bridge:0.1.2` + `:latest` (amd64, arm64; `sha256:d2696476…`). The Unraid session wasn't saved because the container couldn't write `DATA_DIR` (host cause pending the user's `id`/mount/`ls -ldn` output).
 
+- **Deployed (2026-11-21)**: user installed 0.1.2 on Unraid behind HTTPS, logged in, installed the Hubitat app and driver; **single-Echo TTS and MP3 played from the hub (VERIFIED-HW)**. Deployment issues were all on the setup side: the CSP upgrade (fixed in 0.1.1), and `PUID`/`PGID` not reaching the container, which left it as 1000:1000 against a root-owned `DATA_DIR` (fixed by the user's settings).
+
 ## Next
-- User: fix `DATA_DIR` ownership/mount on Unraid, pull 0.1.2, re-run the login, confirm the session saves and `/health` is ready. (0.1.1's CSP fix VERIFIED: the login got past the email step.)
-- User: deploy the container on Unraid/Portainer, set up HTTPS, install the Hubitat app and driver, run the hub tests (docs/status.md "Outstanding steps").
+- User: test zone `speak` from the hub, `lastResult`, and a Rule Machine action (docs/status.md "Outstanding steps").
 
 ## Decisions made
 - PROJECT_BRIEF.md wins on MP3: build `/play` only if a real mechanism is proven; UNVERIFIED until heard on an Echo.
