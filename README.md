@@ -48,14 +48,14 @@ Hubitat (Rule Machine, dashboards)
 
 ## Status
 
-Verified on real hardware (2026-11-20, one Amazon US account):
+Verified on real hardware (2026-11-20 and 2026-11-21, one Amazon US account):
 
 | Feature | Result |
 |---|---|
 | Speech on one Echo | Spoke in under 1 s, normal voice, no chime |
 | Zone (2 Echos, one Amazon request) | Played immediately on both, with chime |
 | MP3 from a public HTTPS URL | Played immediately and completely |
-| Hubitat app and driver | Compile and logic checks only; **not yet tested on a hub** |
+| Hubitat app and driver | Installed and tested on a Hubitat hub: speech on one Echo, zone speech, and `playMp3` all played (zone `playMp3` is refused by design) |
 
 Details and sources are in [`docs/feasibility.md`](docs/feasibility.md) and [`docs/status.md`](docs/status.md).
 

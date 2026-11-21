@@ -44,5 +44,4 @@ Static and dependency review:
 
 ## Next actions
 
-- Fix anything the hub test turns up, and mark the Hubitat layer VERIFIED-HW.
 - Watch alexa-cookie2 for removal of `http-proxy-response-rewrite` (Node 27 support) and for fixes to the `cookie` advisory.
