@@ -89,7 +89,7 @@ The image is published on Docker Hub as [`endiemachswell/echo-bridge`](https://h
    - `DATA_DIR`: a host folder for the Amazon session, e.g. `/mnt/user/appdata/echo-bridge` on Unraid.
    - `PUID` / `PGID`: the user and group that own `DATA_DIR`. Unraid's defaults are `99` / `100`.
    - Optional: `MEDIA_HOST_ALLOWLIST` (needed for MP3 playback) and `ALLOWED_DEVICE_IDS`.
-   - Optional: `ECHO_BRIDGE_IMAGE` to pin a version, e.g. `endiemachswell/echo-bridge:0.1.0`. The default is `:latest`.
+   - Optional: `ECHO_BRIDGE_IMAGE` to pin a version, e.g. `endiemachswell/echo-bridge:0.1.1`. The default is `:latest`.
 3. Create the data folder, owned by that user:
    ```bash
    mkdir -p /mnt/user/appdata/echo-bridge

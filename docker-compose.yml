@@ -5,7 +5,7 @@
 # the "Environment variables" section of a Portainer stack. See .env.example for all settings.
 services:
   echo-bridge:
-    # Pin a version tag (e.g. endiemachswell/echo-bridge:0.1.0) for predictable upgrades.
+    # Pin a version tag (e.g. endiemachswell/echo-bridge:0.1.1) for predictable upgrades.
     image: ${ECHO_BRIDGE_IMAGE:-endiemachswell/echo-bridge:latest}
     container_name: echo-bridge
     restart: unless-stopped

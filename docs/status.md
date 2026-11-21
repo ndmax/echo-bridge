@@ -33,7 +33,7 @@ Static and dependency review:
 2. **`npm test` didn't start on Node 24.** It passed a folder name to `node --test`, which only Node 27 accepts. Fixed with a file glob.
 3. **Device list included music groups (`WHA`) and Alexa app installs (`VOX`).** Both report `VOLUME_SETTING`. Fixed by also filtering on device family.
 4. **The login library's registration data was written with loose permissions, or not at all.** Fixed: the data dir is created before login, and `umask 077` is set.
-5. **Login died after the email step on Unraid (2026-11-21): `ERR_SSL_PROTOCOL_ERROR` on `https://<LAN IP>:3457`.** Amazon's `/ax/claim` page sends `Content-Security-Policy: upgrade-insecure-requests`, and alexa-cookie2 passed it through. Fixed in code: the login process drops only that directive (`stripUpgradeInsecureRequests`, `src/login.js`). Covered by a unit test and a real-HTTP test (38 tests pass). Needs a new image and a real login to verify. It is unclear why the 2026-11-20 login didn't hit this.
+5. **Login died after the email step on Unraid (2026-11-21): `ERR_SSL_PROTOCOL_ERROR` on `https://<LAN IP>:3457`.** Amazon's `/ax/claim` page sends `Content-Security-Policy: upgrade-insecure-requests`, and alexa-cookie2 passed it through. Fixed in code: the login process drops only that directive (`stripUpgradeInsecureRequests`, `src/login.js`). Covered by a unit test and a real-HTTP test (38 tests pass). Needs a new image and a real login to verify. The 2026-11-20 login didn't hit this because it used `LOGIN_PROXY_IP=127.0.0.1`. Browsers treat loopback as secure and (most likely) don't upgrade it. A LAN IP gets upgraded. Lesson: test the login on a LAN IP, as users deploy it.
 
 ## Outstanding steps (user)
 
