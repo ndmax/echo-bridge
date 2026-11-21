@@ -30,9 +30,10 @@ Plan: milestones M0–M7 (setup → research → bridge skeleton → TTS/zones �
 ## Next
 - Zone `speak` from the hub VERIFIED-HW (2026-11-21); the user tried `playMp3` on a zone and it was refused by design.
 - User (optional): one Rule Machine action of each kind.
-- Open idea, not planned: research whether the one-request announcement operation can carry `<audio>` for zone MP3.
+
 
 ## Decisions made
+- Zones stay speech-only; no zone MP3 research or feature (user, 2026-11-21).
 - PROJECT_BRIEF.md wins on MP3: build `/play` only if a real mechanism is proven; UNVERIFIED until heard on an Echo.
 - Workspace stays at `scratch/echo-bridge` (README-SETUP path is outdated).
 - Target Node 24 LTS (`.nvmrc`); use `nvm use` before running. `npm run login` does not work on Node 27.
