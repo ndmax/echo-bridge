@@ -21,10 +21,10 @@ Plan: milestones M0–M7 (setup → research → bridge skeleton → TTS/zones �
 
 - **Docker Hub distribution**: `docker-compose.yml` pulls `${ECHO_BRIDGE_IMAGE:-endiemachswell/echo-bridge:latest}` (no `build:`); `.env.example` gains `ECHO_BRIDGE_IMAGE`; Dockerfile has OCI labels; README covers pull-based install/upgrade, Portainer web-editor stack, and a maintainer `buildx` multi-arch (amd64+arm64) push section. Pushed 2026-11-20: `endiemachswell/echo-bridge:0.1.0` + `:latest` (amd64, arm64); pulled image smoke-tested.
 
-- **Login fix (2026-11-21)**: Unraid login failed after the email step (`ERR_SSL_PROTOCOL_ERROR`). Cause: Amazon's `/ax/claim` sends `CSP: upgrade-insecure-requests`. `src/login.js` now strips only that directive in the login process. 38 tests pass. Not yet in a published image or verified with a real login.
+- **Login fix (2026-11-21)**: Unraid login failed after the email step (`ERR_SSL_PROTOCOL_ERROR`). Cause: Amazon's `/ax/claim` sends `CSP: upgrade-insecure-requests`. `src/login.js` now strips only that directive in the login process. 38 tests pass. Published 2026-11-21 as `endiemachswell/echo-bridge:0.1.1` + `:latest` (amd64, arm64; manifest `sha256:5bd2333b…`); pulled image checked (Node 24.22.3, fix present). Not yet verified with a real login.
 
 ## Next
-- Publish a new image with the login fix (needs the user's go-ahead), then the user re-runs the login on Unraid.
+- User: pull 0.1.1 on Unraid and re-run the login; confirm it gets past the email step.
 - User: deploy the container on Unraid/Portainer, set up HTTPS, install the Hubitat app and driver, run the hub tests (docs/status.md "Outstanding steps").
 
 ## Decisions made
