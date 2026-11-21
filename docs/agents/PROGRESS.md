@@ -23,8 +23,10 @@ Plan: milestones M0–M7 (setup → research → bridge skeleton → TTS/zones �
 
 - **Login fix (2026-11-21)**: Unraid login failed after the email step (`ERR_SSL_PROTOCOL_ERROR`). Cause: Amazon's `/ax/claim` sends `CSP: upgrade-insecure-requests`. `src/login.js` now strips only that directive in the login process. 38 tests pass. Published 2026-11-21 as `endiemachswell/echo-bridge:0.1.1` + `:latest` (amd64, arm64; manifest `sha256:5bd2333b…`); pulled image checked (Node 24.22.3, fix present). Not yet verified with a real login.
 
+- **0.1.2 (2026-11-21)**: login probes the data folder before starting the proxy, and write errors now name the code, path, and uid/gid. Published `endiemachswell/echo-bridge:0.1.2` + `:latest` (amd64, arm64; `sha256:d2696476…`). The Unraid session wasn't saved because the container couldn't write `DATA_DIR` (host cause pending the user's `id`/mount/`ls -ldn` output).
+
 ## Next
-- User: pull 0.1.1 on Unraid and re-run the login; confirm it gets past the email step.
+- User: fix `DATA_DIR` ownership/mount on Unraid, pull 0.1.2, re-run the login, confirm the session saves and `/health` is ready. (0.1.1's CSP fix VERIFIED: the login got past the email step.)
 - User: deploy the container on Unraid/Portainer, set up HTTPS, install the Hubitat app and driver, run the hub tests (docs/status.md "Outstanding steps").
 
 ## Decisions made
