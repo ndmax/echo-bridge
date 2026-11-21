@@ -1,6 +1,6 @@
 {
   "name": "echo-bridge",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "Minimal Hubitat-to-Alexa bridge: single-device TTS, one-call zone announcements, public HTTPS MP3 playback (unverified).",
   "type": "module",

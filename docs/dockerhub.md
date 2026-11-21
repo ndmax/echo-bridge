@@ -30,7 +30,7 @@ Then put the bridge behind HTTPS and install the Hubitat app and driver; see the
 
 ## Image details
 
-- **Tags:** `latest`, and version tags such as `0.1.1` (pin one for predictable upgrades).
+- **Tags:** `latest`, and version tags such as `0.1.2` (pin one for predictable upgrades).
 - **Platforms:** `linux/amd64`, `linux/arm64`.
 - **Base:** `node:24-alpine`; runs as a non-root user.
 - **Ports:** `3456` bridge API (plain HTTP; put a reverse proxy in front), `3457` login proxy (only while signing in).
