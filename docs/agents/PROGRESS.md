@@ -35,7 +35,7 @@ Plan: milestones M0–M7 (setup → research → bridge skeleton → TTS/zones �
 ## Decisions made
 - Zones stay speech-only; no zone MP3 research or feature (user, 2026-11-21).
 - PROJECT_BRIEF.md wins on MP3: build `/play` only if a real mechanism is proven; UNVERIFIED until heard on an Echo.
-- Workspace stays at `scratch/echo-bridge` (README-SETUP path is outdated).
+- Workspace moved from `scratch/echo-bridge` to `~/Cloud/Tech/Codebase/echo-bridge` (2026-11-21), matching README-SETUP; Claude session history migrated.
 - Target Node 24 LTS (`.nvmrc`); use `nvm use` before running. `npm run login` does not work on Node 27.
 - Keep both PROGRESS.md (handoff) and docs/status.md (detailed status).
 - License: MIT, copyright Nathan Maxwell (`LICENSE`), confirmed by user 2026-11-20.
