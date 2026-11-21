@@ -4,7 +4,7 @@
 // sign-in pages (including 2FA) to your browser; our code never sees or stores the password.
 // The proxy is plain HTTP on the LAN (alexa-cookie2 hard-codes http://), runs only while this
 // command runs, and shuts down after success or LOGIN_TIMEOUT_MINUTES.
-import { chmod, mkdir, writeFile } from 'node:fs/promises';
+import { chmod, mkdir, unlink, writeFile } from 'node:fs/promises';
 import http from 'node:http';
 import { dirname, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -39,14 +39,34 @@ async function saveSession(cookieFile, cookieData) {
   await chmod(cookieFile, 0o600); // writeFile's mode only applies when creating the file
 }
 
+// Names the error code, path, and process uid/gid (none are secret): the usual cause is a Docker
+// data folder owned by a different user than the container's PUID:PGID.
+function cannotWriteMessage(path, err) {
+  const who = process.getuid ? `uid ${process.getuid()}, gid ${process.getgid()}` : 'this user';
+  return `cannot write to ${path} (${err.code || err.message}). This process runs as ${who}; ` +
+    'that user must own the folder. Docker: the host DATA_DIR must be owned by PUID:PGID.';
+}
+
+// A probe write, because access() checks can disagree with what a bind mount actually allows.
+async function assertWritableDir(dir) {
+  const probe = join(dir, `.write-test-${process.pid}`);
+  try {
+    await mkdir(dir, { recursive: true, mode: 0o700 });
+    await writeFile(probe, '');
+    await unlink(probe);
+  } catch (err) {
+    throw new Error(cannotWriteMessage(dir, err));
+  }
+}
+
 // Resolves with the number of devices found. Prints only the proxy URL and outcomes.
 export async function runLogin({ config, remote = new AlexaRemote(), print = console.log, timeoutMs = LOGIN_TIMEOUT_MINUTES * 60_000 }) {
   if (!config.loginProxyIp) {
     throw new Error('Set LOGIN_PROXY_IP to the LAN address your browser uses to reach this machine');
   }
-  // Must exist before init(): alexa-cookie2 writes its registration data here and silently
-  // ignores write errors.
-  await mkdir(dirname(config.cookieFile), { recursive: true, mode: 0o700 });
+  // Must exist and be writable before init(): alexa-cookie2 writes its registration data here and
+  // silently ignores write errors, and the session is saved here only after the user has signed in.
+  await assertWritableDir(dirname(config.cookieFile));
   return new Promise((resolve, reject) => {
     let finished = false;
     const finish = (err, value) => {
@@ -70,7 +90,7 @@ export async function runLogin({ config, remote = new AlexaRemote(), print = con
       if (!remote.cookieData) return finish(new Error('login finished but no session data was returned'));
       saveSession(config.cookieFile, remote.cookieData)
         .then(() => finish(null, Object.keys(remote.serialNumbers || {}).length))
-        .catch(() => finish(new Error('could not write COOKIE_FILE')));
+        .catch((err) => finish(new Error(cannotWriteMessage(config.cookieFile, err))));
     });
   });
 }

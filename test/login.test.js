@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import https from 'node:https';
 import net from 'node:net';
 import { EventEmitter } from 'node:events';
-import { mkdtemp, readFile, stat, rm } from 'node:fs/promises';
+import { chmod, mkdir, mkdtemp, readFile, stat, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { loadConfig } from '../src/config.js';
@@ -79,6 +79,22 @@ test('failed login reports a generic error and writes nothing', async () => {
   await assert.rejects(runLogin({ config, remote, print: () => {} }), /Amazon login failed/);
   await assert.rejects(stat(config.cookieFile));
   assert.equal(remote.stopped, 1);
+  await rm(dir, { recursive: true });
+});
+
+test('unwritable data folder fails before the Amazon sign-in starts, and says why', async () => {
+  const { config, dir } = await tempConfig();
+  const dataDir = join(dir, 'data');
+  await mkdir(dataDir, { mode: 0o500 }); // e.g. owned by another uid on the Docker host
+  await chmod(dataDir, 0o500);
+  const remote = fakeRemote({ cookieData: { localCookie: 'x' } });
+  let initCalled = false;
+  const init = remote.init;
+  remote.init = (...args) => { initCalled = true; return init.apply(remote, args); };
+  await assert.rejects(runLogin({ config, remote, print: () => {} }),
+    (err) => /cannot write to .*data/.test(err.message) && /EACCES/.test(err.message) && /uid \d+/.test(err.message));
+  assert.equal(initCalled, false, 'must not start the login proxy');
+  await chmod(dataDir, 0o700);
   await rm(dir, { recursive: true });
 });
 

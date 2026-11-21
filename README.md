@@ -243,6 +243,7 @@ curl -s -X POST $BRIDGE/speak -H "Authorization: Bearer $TOKEN" -H 'Content-Type
 | MP3 accepted but silent, or Alexa says there was a problem | The file or URL doesn't meet the [MP3 requirements](#mp3-requirements). Re-encode, and check the URL from outside your network. |
 | Login page never loads / `ERR_CONNECTION_REFUSED` | Use exactly the URL the login printed. Make sure port 3457 is reachable (published in Docker, open in the host firewall). On Node 27 the login proxy crashes; use Node 24 or Docker. |
 | After entering your email: `ERR_SSL_PROTOCOL_ERROR` / *sent an invalid response* on `https://<IP>:3457` | Fixed in the current image: update it (`docker compose pull && docker compose up -d`) and run the login again. Older images passed on an Amazon header that switched the browser to HTTPS. |
+| Login: `cannot write to /app/data…` or `could not write COOKIE_FILE`; data folder stays empty | The container user (`PUID`:`PGID`) can't write the host `DATA_DIR`. Check that `DATA_DIR` is the folder you think it is, then `chown <PUID>:<PGID>` it (step 1) and recreate the container. |
 | Login redirects to an Amazon error, or loops | Start the login again in a private browser window. Check `AMAZON_PAGE` matches your Amazon region (e.g. `amazon.co.uk`). |
 | Hubitat: *Could not load devices from the bridge* | Hubitat can't reach the HTTPS URL, the certificate isn't trusted, or the token is wrong. Test with `curl` from another machine first. |
 | `port 3456 is already in use` | Another bridge (or another program) is running. Stop it first. |
