@@ -106,14 +106,58 @@ The image is published on Docker Hub as [`endiemachswell/echo-bridge`](https://h
 
 ### Option B: Node.js (no Docker)
 
+The bridge is an ordinary Node.js program: you download the source, install its one dependency, write a settings file, and start it. The example below uses **Debian 12 or 13** (for example a Proxmox LXC container) and **[PM2](https://pm2.keymetrics.io/)** to keep it running and start it at boot. Other Linux systems work the same way; only the package commands differ.
+
+Run these commands as the regular user that will run the bridge, not as `root`. In a fresh Proxmox Debian container you're logged in as `root`, so create a user first and switch to it:
 ```bash
-nvm use                 # Node 24, from .nvmrc
-npm ci --omit=dev
-cp .env.example .env    # set BRIDGE_TOKEN as above; set HOST to an address your proxy can reach
-chmod 600 .env
-npm start
+apt update && apt install -y sudo git curl openssl
+adduser echobridge && usermod -aG sudo echobridge
+su - echobridge
 ```
-Run it under systemd or a similar process manager if it should start on boot.
+
+1. **Install Node.js 24 LTS.** Follow the official instructions at [nodejs.org/en/download](https://nodejs.org/en/download): choose **v24 (LTS)**, **Linux** and **nvm**, and run the commands it shows. Don't use Debian's own `nodejs` package (it's too old), and don't use Node 25 or newer (the Amazon login doesn't work on Node 27). Then log out and back in, and check:
+   ```bash
+   node -v     # v24.x.x
+   ```
+2. **Download the bridge and install its dependency:**
+   ```bash
+   cd ~
+   git clone https://github.com/ndmax/echo-bridge.git
+   cd echo-bridge
+   npm ci --omit=dev
+   ```
+3. **Create the settings file:**
+   ```bash
+   cp .env.example .env
+   sed -i "s/^BRIDGE_TOKEN=.*/BRIDGE_TOKEN=$(openssl rand -hex 32)/" .env
+   chmod 600 .env
+   hostname -I     # this machine's LAN IP, for the settings below
+   ```
+   Then edit `.env` (e.g. `nano .env`):
+   - `HOST`: where the bridge listens. Keep `127.0.0.1` only if your HTTPS reverse proxy runs on this same machine. If the proxy is somewhere else (another container, VM or box), set `0.0.0.0`, or this machine's LAN IP.
+   - `LOGIN_PROXY_IP`: this machine's LAN IP from `hostname -I`. Used only during login.
+   - Optional: `MEDIA_HOST_ALLOWLIST` (needed for MP3 playback) and `ALLOWED_DEVICE_IDS`.
+   - Leave the rest as is, and ignore the *Docker Compose / Portainer only* section at the bottom. The Amazon session is saved in `echo-bridge/data/`.
+4. **Try it once in the foreground:**
+   ```bash
+   npm start
+   ```
+   Expect `echo-bridge listening on …` and `Amazon login required …`. That's normal until you sign in (step 2). Stop it with Ctrl-C.
+5. **Run it under PM2 so it keeps running and starts at boot.** Start it from the `echo-bridge` folder: the bridge finds `.env` and `data/` relative to the folder it was started in.
+   ```bash
+   npm install -g pm2
+   cd ~/echo-bridge
+   pm2 start npm --name echo-bridge -- start
+   pm2 logs echo-bridge --lines 20     # expect the same two lines; Ctrl-C leaves the log view
+   pm2 startup
+   ```
+   `pm2 startup` prints a `sudo env PATH=… pm2 startup systemd …` command. Copy and run it exactly as printed. Then save the process list so PM2 restores it at boot:
+   ```bash
+   pm2 save
+   ```
+   Useful commands: `pm2 status`, `pm2 restart echo-bridge`, `pm2 stop echo-bridge`, `pm2 logs echo-bridge`. See PM2's [quick start](https://pm2.keymetrics.io/docs/usage/quick-start/) and [startup script](https://pm2.keymetrics.io/docs/usage/startup/) docs for more. If you later switch Node versions with nvm, run `pm2 unstartup`, then `pm2 startup` and `pm2 save` again.
+
+Prefer systemd, or another process manager? Any works, as long as it runs `npm start` in the `echo-bridge` folder as that same user.
 
 ## 2. Sign in to Amazon
 
@@ -121,10 +165,10 @@ You only need to do this once, and again if the session ever expires. The login 
 
 1. Start the login:
    - Docker: `docker exec -it echo-bridge node src/login.js`
-   - Node.js: `npm run login`
+   - Node.js: `cd ~/echo-bridge && npm run login` (the bridge can keep running under PM2 meanwhile)
 2. It prints a URL such as `http://192.168.1.20:3457/`. Open **exactly that URL**: the same IP and port, not a hostname, and not through your HTTPS proxy. The login proxy only works on the address it printed.
 3. Sign in and complete 2FA. The browser ends on *"Amazon Alexa Cookie successfully retrieved. You can close the browser."*, and the console prints `Login complete …`.
-4. Restart the bridge: `docker restart echo-bridge`, or Ctrl-C and `npm start`. The log should say `Amazon session ready`.
+4. Restart the bridge: `docker restart echo-bridge`, `pm2 restart echo-bridge`, or Ctrl-C and `npm start`. The log should say `Amazon session ready`.
 
 The login proxy is plain HTTP on your LAN and runs only while the login command runs; it stops after success or 10 minutes. The session is saved to the data folder with owner-only permissions, and the bridge refreshes it automatically.
 
@@ -251,7 +295,7 @@ curl -s -X POST $BRIDGE/speak -H "Authorization: Bearer $TOKEN" -H 'Content-Type
 ## Upgrading
 
 - **Docker:** `docker compose pull && docker compose up -d`. In Portainer, use the stack's **Update** with *Re-pull image* on. If you pinned `ECHO_BRIDGE_IMAGE` to a version, change the tag first.
-- **Node.js:** `git pull && npm ci --omit=dev`, then restart.
+- **Node.js:** in the `echo-bridge` folder, `git pull && npm ci --omit=dev`, then restart (`pm2 restart echo-bridge`).
 
 Your session in the data folder is kept either way. To upgrade the Hubitat code, open the driver and the app under *Drivers Code* / *Apps Code*, use **Import** again with the same URLs, **Save**, then click **Done** in the Echo Bridge app.
 

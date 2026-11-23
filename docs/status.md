@@ -1,6 +1,8 @@
 # Status
 
-Last updated: 2026-11-21. Current release: 0.1.2.
+Last updated: 2026-11-22. Current release: 0.1.2.
+
+2026-11-22 (docs only): README Option B rewritten as step-by-step Debian + PM2 setup after forum feedback. The PM2 commands (start, logs, restart, stop, save) were checked in a `node:24-bookworm` container; `pm2 startup` (systemd) was not, since containers have no init.
 
 **VERIFIED-HW** means heard on a real Echo, or seen working on real hardware, by us. Everything was tested with one Amazon US account. Evidence and sources are in [`research.md`](research.md).
 
